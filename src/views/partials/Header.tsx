@@ -12,6 +12,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import Logo from "../../components/Logo";
 import icon from "/job-wise2.png";
 import { Helmet } from "react-helmet";
+import Footer from "./Footer";
 const menuItems = [
   {
     name: "Home",
@@ -115,6 +116,7 @@ export default function App() {
         </NavbarMenu>
       </Navbar>
       <Outlet />
+      <Footer />
     </main>
   );
 }
