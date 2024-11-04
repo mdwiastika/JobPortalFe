@@ -322,7 +322,7 @@ export default function Home() {
           {categoryItems.map((category, index) => (
             <div
               key={`${index}-category`}
-              className="border-2 p-3 flex justify-start gap-2 items-center md:flex-col"
+              className="border-2 p-3 flex justify-start gap-2 items-center md:flex-col hover:border-blue-700 transition-all ease-in-out duration-300"
             >
               <img src={category.icon} className="w-6 h-auto md:w-10" alt="" />
               <h2 className="text-xl font-bold">{category.name}</h2>
