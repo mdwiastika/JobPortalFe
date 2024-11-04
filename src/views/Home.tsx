@@ -451,7 +451,7 @@ export default function Home() {
       </section>
       <section className="mt-10 p-4 container mx-auto bg-gradient-to-r from-indigo-600 to-blue-600 rounded-lg">
         <div className="flex flex-col lg:flex-row justify-evenly items-center mx-10">
-          <div className="w-1/2 lg:px-6 text-white relative">
+          <div className="lg:w-1/2 lg:px-6 text-white relative">
             <h2 className="text-3xl lg:text-6xl max-w-[500px] font-bold text-white">
               Start posting jobs today
             </h2>
@@ -463,7 +463,7 @@ export default function Home() {
               Sign Up For Free
             </Link>
           </div>
-          <div className="w-1/2">
+          <div className="lg:w-1/2 mt-10 lg:mt-0">
             <img src={adminImage} alt="" />
           </div>
         </div>
