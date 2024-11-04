@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import heroImage from "/hero-person1.png";
+import adminImage from "/admin.webp";
 export default function Home() {
   const categoryItems = [
     {
@@ -49,6 +50,97 @@ export default function Home() {
       url: "/information-technology",
       icon: "/category/technology.svg",
       jobs: 500,
+    },
+  ];
+  const jobItems = [
+    {
+      title: "Frontend Developer",
+      description: "We are looking for a frontend developer to join our team.",
+      employment_type: "Full-time",
+      categories: ["Engineering", "Information Technology"],
+      company: {
+        name: "JobWise",
+        logo: "/jobs/brand.svg",
+      },
+      location: "Jakarta, Indonesia",
+    },
+    {
+      title: "Backend Developer",
+      description: "We are looking for a backend developer to join our team.",
+      employment_type: "Full-time",
+      categories: ["Engineering", "Information Technology"],
+      company: {
+        name: "JobWise",
+        logo: "/jobs/brand.svg",
+      },
+      location: "Surabaya, Indonesia",
+    },
+    {
+      title: "UI/UX Designer",
+      description: "We are looking for a UI/UX designer to join our team.",
+      employment_type: "Full-time",
+      categories: ["Design"],
+      company: {
+        name: "JobWise",
+        logo: "/jobs/brand.svg",
+      },
+      location: "Makassar, Indonesia",
+    },
+    {
+      title: "Product Manager",
+      description: "We are looking for a product manager to join our team.",
+      employment_type: "Full-time",
+      categories: ["Business"],
+      company: {
+        name: "JobWise",
+        logo: "/jobs/brand.svg",
+      },
+      location: "Jakarta, Indonesia",
+    },
+    {
+      title: "Marketing Manager",
+      description: "We are looking for a marketing manager to join our team.",
+      employment_type: "Full-time",
+      categories: ["Marketing"],
+      company: {
+        name: "JobWise",
+        logo: "/jobs/brand.svg",
+      },
+      location: "Mojokerto, Indonesia",
+    },
+    {
+      title: "Finance Manager",
+      description: "We are looking for a finance manager to join our team.",
+      employment_type: "Full-time",
+      categories: ["Finance"],
+      company: {
+        name: "JobWise",
+        logo: "/jobs/brand.svg",
+      },
+      location: "Semarang, Indonesia",
+    },
+    {
+      title: "Sales Manager",
+      description: "We are looking for a sales manager to join our team.",
+      employment_type: "Full-time",
+      categories: ["Sales"],
+      company: {
+        name: "JobWise",
+        logo: "/jobs/brand.svg",
+      },
+      location: "Bali, Indonesia",
+    },
+    {
+      title: "Human Resources Manager",
+      description:
+        "We are looking for a human resources manager to join our team.",
+      employment_type: "Full-time",
+      categories: ["Human Resources"],
+      company: {
+        name: "JobWise",
+        logo: "/jobs/brand.svg",
+      },
+      location: "Jakarta, Indonesia",
     },
   ];
   return (
@@ -286,13 +378,13 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="container mx-auto mt4 p-4">
+      <section className="container mx-auto mt-4 p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
             Explore by <span className="text-blue-500">category</span>
           </h2>
           <Link to={"/search-job"} className="flex gap-2 items-center">
-            <span>Show all jobs</span>
+            <span className="text-blue-700 font-medium">Show all jobs</span>
             <div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -318,7 +410,7 @@ export default function Home() {
             </div>
           </Link>
         </div>
-        <div className="mt-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-6 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           {categoryItems.map((category, index) => (
             <div
               key={`${index}-category`}
@@ -355,6 +447,92 @@ export default function Home() {
               </Link>
             </div>
           ))}
+        </div>
+      </section>
+      <section className="mt-10 p-4 container mx-auto bg-gradient-to-r from-indigo-600 to-blue-600 rounded-lg">
+        <div className="flex flex-col lg:flex-row justify-evenly items-center mx-10">
+          <div className="w-1/2 lg:px-6 text-white relative">
+            <h2 className="text-3xl lg:text-6xl max-w-[500px] font-bold text-white">
+              Start posting jobs today
+            </h2>
+            <p className="mt-4 mb-6">Start posting jobs for only Rp 100.000</p>
+            <Link
+              to={"/signup"}
+              className="text-blue-700 bg-white py-4 px-8 font-bold"
+            >
+              Sign Up For Free
+            </Link>
+          </div>
+          <div className="w-1/2">
+            <img src={adminImage} alt="" />
+          </div>
+        </div>
+      </section>
+      <section className="mt-10 p-4 container mx-auto">
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+            Featured <span className="text-blue-500">jobs</span>
+          </h2>
+          <Link to={"/search-job"} className="flex gap-2 items-center">
+            <span className="text-blue-700 font-medium">Show all jobs</span>
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
+                <g fill="none">
+                  <path
+                    fill="currentColor"
+                    d="M4 11.25a.75.75 0 0 0 0 1.5zm0 1.5h16v-1.5H4z"
+                    opacity="0.5"
+                  />
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="m14 6l6 6l-6 6"
+                  />
+                </g>
+              </svg>
+            </div>
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {jobItems.map((job, index) => (
+            <div
+              key={`${index}-job`}
+              className="border-2 hover:border-blue-700 flex flex-col gap-4 p-4"
+            >
+              <div className="flex justify-between items-center">
+                <img src={job.company.logo} alt="" />
+                <div className="py-1 px-3 border border-blue-700">
+                  {job.employment_type}
+                </div>
+              </div>
+              <div>
+                <h2 className="mt-3 font-semibold text-base">{job.title}</h2>
+                <span className="text-sm">
+                  {job.company.name} | {job.location}
+                </span>
+                <p className="mt-6 text-sm">{job.description}</p>
+                <div className="mt-6 text-sm grid grid-flow-col auto-cols-max gap-2">
+                  {job.categories.map((category, index) => (
+                    <div key={`${index}-${job.title}`}>
+                      <span
+                        className={`text-blue-700 bg-blue-700/20 rounded-full py-1 px-3`}
+                      >
+                        {category}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+          ;
         </div>
       </section>
     </main>
