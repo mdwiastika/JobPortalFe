@@ -206,7 +206,7 @@ export default function Signup() {
     </section>
   );
 }
-const InputForm = (props) => {
+const InputForm = (props: { label: string; type: string }) => {
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
       <Input {...props} />

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import signUpImage from "/sign-up-banner.png";
 import { useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import { Input } from "@nextui-org/react";
 export default function Login() {
   const [submitMessage, setSubmitMessage] = useState("");
   interface FormValues {
@@ -57,18 +58,20 @@ export default function Login() {
                   <div className="mt-4">
                     <Field
                       type="text"
-                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
+                      className="block w-full py-2 rounded-md"
                       name="email"
-                      placeholder="Email Address"
+                      as={InputForm}
+                      label="Email Address"
                       required
                     />
                   </div>
                   <div className="mt-4">
                     <Field
                       type="password"
-                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
+                      className="block w-full py-2 rounded-md"
                       name="password"
-                      placeholder="Password"
+                      as={InputForm}
+                      label="Password"
                       required
                     />
                   </div>
@@ -105,3 +108,10 @@ export default function Login() {
     </section>
   );
 }
+const InputForm = (props: { label: string; type: string }) => {
+  return (
+    <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+      <Input {...props} />
+    </div>
+  );
+};
