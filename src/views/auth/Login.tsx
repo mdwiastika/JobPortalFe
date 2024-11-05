@@ -2,7 +2,7 @@ import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Link } from "react-router-dom";
 import signUpImage from "/sign-up-banner.png";
 import { useState } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 export default function Login() {
   const [submitMessage, setSubmitMessage] = useState("");
   interface FormValues {
@@ -31,9 +31,11 @@ export default function Login() {
   };
   return (
     <section className="min-h-[calc(100vh-65px)] relative flex justify-center items-center z-30">
-      <Helmet>
-        <title>JobWise | Login</title>
-      </Helmet>
+      <HelmetProvider>
+        <Helmet>
+          <title>JobWise | Login</title>
+        </Helmet>
+      </HelmetProvider>
       <div className="flex justify-center p-4 flex-col-reverse lg:flex-row z-30 shadow-md rounded-md max-h-[500px] bg-white/40 backdrop-blur-sm">
         <div className="lg:w-2/3">
           <div className="rounded-lg mt-4">

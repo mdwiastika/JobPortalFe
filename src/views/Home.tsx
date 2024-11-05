@@ -229,25 +229,25 @@ export default function Home() {
                 opacity="0.6"
                 d="M328.972 194.827L615.806 54.9799L617.987 263.252L329.227 402.94L328.972 194.827Z"
                 stroke="#CCCCF5"
-                stroke-width="4"
+                strokeWidth="4"
               />
               <path
                 opacity="0.7"
                 d="M428.972 304.383L997.883 24.3027L1120.59 325.287L429.229 662.488L428.972 304.383Z"
                 stroke="#CCCCF5"
-                stroke-width="4"
+                strokeWidth="4"
               />
               <path
                 opacity="0.7"
                 d="M261.005 527.224L816.767 243.268L816.767 583.273L261.229 865.43L261.005 527.224Z"
                 stroke="#CCCCF5"
-                stroke-width="4"
+                strokeWidth="4"
               />
               <path
                 opacity="0.7"
                 d="M2.00481 874.244L517.767 620.214L517.767 930.252L2.22902 1182.48L2.00481 874.244Z"
                 stroke="#CCCCF5"
-                stroke-width="4"
+                strokeWidth="4"
               />
             </svg>
           </div>
@@ -290,7 +290,7 @@ export default function Home() {
               viewBox="0 0 83 32"
               fill="none"
             >
-              <g opacity="0.3" clip-path="url(#clip0_1503_268)">
+              <g opacity="0.3" clipPath="url(#clip0_1503_268)">
                 <path
                   d="M0.303711 0.446289H6.24396V6.41618H0.303711V0.446289Z"
                   fill="#202430"
@@ -320,7 +320,7 @@ export default function Home() {
               viewBox="0 0 183 24"
               fill="none"
             >
-              <g opacity="0.3" clip-path="url(#clip0_1503_272)">
+              <g opacity="0.3" clipPath="url(#clip0_1503_272)">
                 <path
                   d="M156.203 9.52369V23.9861H160.791V14.3445H177.571V23.9861H182.16V9.52369H156.203ZM160.267 4.83496H177.965C180.456 4.3727 182.225 2.12739 182.75 0.0141602H155.482C156.006 2.12739 157.842 4.30666 160.267 4.83496ZM142.241 23.9861C144.535 22.9955 145.781 21.2785 146.305 19.2974H125.657V0.0801986H121.004V23.9861H142.241ZM86.5909 4.76893H102.978C105.469 4.0425 107.501 2.12739 108.025 0.0801986H82.0681V14.2124H103.306V19.1653H86.6564C84.0345 19.8917 81.8059 21.6748 80.6916 23.9861H107.894V9.52369H86.6564L86.5909 4.76893ZM46.2133 4.83496H63.9113C66.4021 4.3727 68.2375 2.12739 68.6963 0.0141602H41.3628C41.8872 2.12739 43.7225 4.30666 46.2133 4.83496ZM46.2133 14.2785H63.9113C66.4021 13.8162 68.2375 11.5709 68.6963 9.45765H41.3628C41.8872 11.5709 43.7225 13.7502 46.2133 14.2785ZM46.2133 23.9861H63.9113C66.4021 23.5238 68.2375 21.2785 68.6963 19.1653H41.3628C41.8872 21.2785 43.7225 23.5238 46.2133 23.9861Z"
                   fill="#202430"
@@ -350,7 +350,7 @@ export default function Home() {
               viewBox="0 0 118 28"
               fill="none"
             >
-              <g opacity="0.3" clip-path="url(#clip0_1503_277)">
+              <g opacity="0.3" clipPath="url(#clip0_1503_277)">
                 <path
                   d="M27.946 26.1392H21.4896L19.5145 21.335H8.75424L6.95475 26.1392H0.604736L10.306 1.87487H17.2562L27.946 26.1392ZM13.8695 7.67292L10.3417 17.1007H17.7505L13.8695 7.67292ZM51.399 1.87487H56.6202V26.1392H50.6221V10.983L44.1308 18.5959H43.2139L36.723 10.983V26.1389H30.7248V1.87487H35.9461L43.6719 10.8759L51.399 1.87487ZM71.8181 1.87487C80.6022 1.87487 85.1172 7.38866 85.1172 14.0417C85.1172 21.0147 80.7432 26.1392 71.1474 26.1392H61.1984V1.87487H71.8181ZM67.1961 21.692H71.1114C77.1442 21.692 78.9437 17.5641 78.9437 14.0057C78.9437 9.84275 76.7208 6.32151 71.0409 6.32151H67.196V21.692H67.1961ZM97.0502 7.62816L89.4873 0H117.02V27.7664L109.457 20.1391V7.62816H97.0502ZM97.0413 9.1567L89.2549 17.0086V28H100.153L107.939 20.1481H97.0413V9.1567Z"
                   fill="#202430"
@@ -408,9 +408,9 @@ export default function Home() {
                   />
                   <path
                     stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="1.5"
                     d="m14 6l6 6l-6 6"
                   />
                 </g>
@@ -445,9 +445,9 @@ export default function Home() {
                     />
                     <path
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
                       d="m14 6l6 6l-6 6"
                     />
                   </g>
@@ -498,9 +498,9 @@ export default function Home() {
                   />
                   <path
                     stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="1.5"
                     d="m14 6l6 6l-6 6"
                   />
                 </g>

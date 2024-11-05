@@ -7,12 +7,15 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
+  Switch,
 } from "@nextui-org/react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Logo from "../../components/Logo";
 import icon from "/job-wise2.png";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import Footer from "./Footer";
+import HugeiconsDisability from "../../components/DisabilityLogo";
+import NormalPeople from "../../components/NormalLogo";
 const menuItems = [
   {
     name: "Home",
@@ -20,7 +23,7 @@ const menuItems = [
   },
   {
     name: "Search Job",
-    url: "/search-job",
+    url: "/jobs",
   },
   {
     name: "Companies",
@@ -35,6 +38,16 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [nameMenu, setNameMenu] = useState("Home");
   const location = useLocation();
+  const [isDisability, setIsDisability] = useState(false);
+  useEffect(() => {
+    if (!localStorage.getItem("isDisability")) {
+      localStorage.setItem("isDisability", JSON.stringify(isDisability));
+    } else {
+      setIsDisability(
+        JSON.parse(localStorage.getItem("isDisability") || "false")
+      );
+    }
+  }, [isDisability]);
   useEffect(() => {
     const item = menuItems.find((item) => item.url === location.pathname);
     if (item) {
@@ -44,10 +57,12 @@ export default function App() {
 
   return (
     <main className="font-montserrat">
-      <Helmet>
-        <title>JobWise | {nameMenu}</title>
-        <link rel="shortcut icon" href={icon} type="image/x-icon" />
-      </Helmet>
+      <HelmetProvider>
+        <Helmet>
+          <title>JobWise | {nameMenu}</title>
+          <link rel="shortcut icon" href={icon} type="image/x-icon" />
+        </Helmet>
+      </HelmetProvider>
       <Navbar
         onMenuOpenChange={setIsMenuOpen}
         className="bg-gray-100/40 backdrop-blur-md"
@@ -79,6 +94,22 @@ export default function App() {
               </Link>
             </NavbarItem>
           ))}
+          <NavbarItem className="">
+            <Switch
+              defaultSelected={
+                localStorage.getItem("isDisability") === "true" ? true : false
+              }
+              size="md"
+              color="primary"
+              thumbIcon={({ isSelected, className }) =>
+                isSelected ? (
+                  <HugeiconsDisability className={className} />
+                ) : (
+                  <NormalPeople className={className} />
+                )
+              }
+            ></Switch>
+          </NavbarItem>
         </NavbarContent>
         <NavbarContent justify="end">
           <NavbarItem className="hidden lg:flex">
