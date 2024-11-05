@@ -83,9 +83,9 @@ export default function Login() {
                     Submit
                   </button>
                   <p className="mt-4 text-center">
-                    Already have a account?{" "}
-                    <Link to={"/login"} className="text-blue-700">
-                      Sign In
+                    Don't have a account?{" "}
+                    <Link to={"/signup"} className="text-blue-700">
+                      Sign Up
                     </Link>
                   </p>
                 </Form>
