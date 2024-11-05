@@ -20,7 +20,7 @@ export default function PostDetail() {
   return (
     <div>
       <div className="bg-slate-200 flex justify-between items-center">
-        <h2>Job Details: </h2>
+        <h2>Job Details: {post.title} </h2>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import signUpImage from "/sign-up-banner.png";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import { Input } from "@nextui-org/react";
 export default function Signup() {
   const [role, setRole] = useState("");
   const clickRoleHandler = (roleSelected: string) => {
@@ -85,36 +86,40 @@ export default function Signup() {
                   <div className="mt-4">
                     <Field
                       type="text"
-                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
+                      className="block w-full py-2 rounded-md"
                       name="first_name"
-                      placeholder="FirstName"
+                      as={InputForm}
+                      label="First Name"
                       required
                     />
                   </div>
                   <div className="mt-4">
                     <Field
                       type="text"
-                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
+                      className="block w-full py-2 rounded-md"
                       name="last_name"
-                      placeholder="LastName"
+                      as={InputForm}
+                      label="Last Name"
                       required
                     />
                   </div>
                   <div className="mt-4">
                     <Field
                       type="text"
-                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
+                      className="block w-full py-2 rounded-md"
                       name="email"
-                      placeholder="Email Address"
+                      as={InputForm}
+                      label="Email Address"
                       required
                     />
                   </div>
                   <div className="mt-4">
                     <Field
                       type="password"
-                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
+                      className="block w-full py-2 rounded-md"
                       name="password"
-                      placeholder="Password"
+                      as={InputForm}
+                      label="Password"
                       required
                     />
                   </div>
@@ -201,3 +206,10 @@ export default function Signup() {
     </section>
   );
 }
+const InputForm = (props) => {
+  return (
+    <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+      <Input {...props} />
+    </div>
+  );
+};
