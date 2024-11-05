@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import signUpImage from "/sign-up-banner.png";
 import { Field, Form, Formik, FormikHelpers } from "formik";
+import { Helmet } from "react-helmet";
 export default function Signup() {
   const [role, setRole] = useState("");
   const clickRoleHandler = (roleSelected: string) => {
@@ -152,6 +153,9 @@ export default function Signup() {
   };
   return (
     <section className="min-h-[calc(100vh-65px)] flex justify-center items-center shadow-lg p-4 flex-col">
+      <Helmet>
+        <title>JobWise | Sign Up</title>
+      </Helmet>
       <div className="p-4 lg:p-8 shadow-md border" id="choice-role">
         <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold max-w-[800px]">
           Join Now and Discover{" "}
