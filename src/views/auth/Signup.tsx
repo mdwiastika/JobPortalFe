@@ -84,7 +84,7 @@ export default function Signup() {
                   <div className="mt-4">
                     <Field
                       type="text"
-                      className="border block w-full py-2 px-5 rounded-md"
+                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
                       name="first_name"
                       placeholder="FirstName"
                       required
@@ -93,7 +93,7 @@ export default function Signup() {
                   <div className="mt-4">
                     <Field
                       type="text"
-                      className="border block w-full py-2 px-5 rounded-md"
+                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
                       name="last_name"
                       placeholder="LastName"
                       required
@@ -102,7 +102,7 @@ export default function Signup() {
                   <div className="mt-4">
                     <Field
                       type="text"
-                      className="border block w-full py-2 px-5 rounded-md"
+                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
                       name="email"
                       placeholder="Email Address"
                       required
@@ -111,7 +111,7 @@ export default function Signup() {
                   <div className="mt-4">
                     <Field
                       type="password"
-                      className="border block w-full py-2 px-5 rounded-md"
+                      className="border border-blue-500 block w-full py-2 px-5 rounded-md"
                       name="password"
                       placeholder="Password"
                       required
@@ -161,11 +161,11 @@ export default function Signup() {
           Join a growing community of professionals! Register as a Job Seeker to
           find job opportunities, or as a Recruiter to find top talent.
         </p>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="mt-8">
             <button
               onClick={() => clickRoleHandler("job-seeker")}
-              className="bg-blue-500 text-white hover:text-blue-500 hover:bg-white hover:border hover:border-blue-500 font-semibold py-2 px-4 transition duration-300"
+              className="bg-blue-500 text-white hover:text-blue-500 hover:bg-white hover:border hover:border-blue-500 font-semibold py-1 px-3 lg:py-2 lg:px-4 transition duration-300"
             >
               Sign Up as Job Seeker
             </button>
@@ -173,7 +173,7 @@ export default function Signup() {
           <div className="mt-8">
             <button
               onClick={() => clickRoleHandler("recruiter")}
-              className="text-blue-500 bg-white border border-blue-500 hover:bg-blue-500 hover:text-white font-semibold py-2 px-4 transition duration-300"
+              className="text-blue-500 bg-white border border-blue-500 hover:bg-blue-500 hover:text-white font-semibold py-1 px-3 lg:py-2 lg:px-4 transition duration-300"
             >
               Sign Up as Recruiter
             </button>
