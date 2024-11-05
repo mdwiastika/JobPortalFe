@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -32,8 +32,8 @@ const menuItems = [
   },
 ];
 export default function App() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [nameMenu, setNameMenu] = React.useState("Home");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [nameMenu, setNameMenu] = useState("Home");
   const location = useLocation();
   useEffect(() => {
     const item = menuItems.find((item) => item.url === location.pathname);
