@@ -38,14 +38,14 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [nameMenu, setNameMenu] = useState("Home");
   const location = useLocation();
-  const [isDisability, setIsDisability] = useState(false);
+  const [isDisability, setIsDisability] = useState(
+    localStorage.getItem("isDisability") === "true" ? true : false
+  );
   useEffect(() => {
-    if (!localStorage.getItem("isDisability")) {
-      localStorage.setItem("isDisability", JSON.stringify(isDisability));
+    if (isDisability) {
+      localStorage.setItem("isDisability", "true");
     } else {
-      setIsDisability(
-        JSON.parse(localStorage.getItem("isDisability") || "false")
-      );
+      localStorage.setItem("isDisability", "false");
     }
   }, [isDisability]);
   useEffect(() => {
@@ -100,6 +100,9 @@ export default function App() {
                 localStorage.getItem("isDisability") === "true" ? true : false
               }
               size="md"
+              onValueChange={() => {
+                setIsDisability(isDisability ? false : true);
+              }}
               color="primary"
               thumbIcon={({ isSelected, className }) =>
                 isSelected ? (
