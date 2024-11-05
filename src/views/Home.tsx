@@ -58,6 +58,7 @@ export default function Home() {
       description: "We are looking for a frontend developer to join our team.",
       employment_type: "Full-time",
       categories: ["Engineering", "Information Technology"],
+      slug: "frontend-developer",
       company: {
         name: "JobWise",
         logo: "/jobs/brand.svg",
@@ -69,6 +70,7 @@ export default function Home() {
       description: "We are looking for a backend developer to join our team.",
       employment_type: "Full-time",
       categories: ["Engineering", "Information Technology"],
+      slug: "backend-developer",
       company: {
         name: "JobWise",
         logo: "/jobs/brand.svg",
@@ -80,6 +82,7 @@ export default function Home() {
       description: "We are looking for a UI/UX designer to join our team.",
       employment_type: "Full-time",
       categories: ["Design"],
+      slug: "ui-ux-designer",
       company: {
         name: "JobWise",
         logo: "/jobs/brand.svg",
@@ -91,6 +94,7 @@ export default function Home() {
       description: "We are looking for a product manager to join our team.",
       employment_type: "Full-time",
       categories: ["Business"],
+      slug: "product-manager",
       company: {
         name: "JobWise",
         logo: "/jobs/brand.svg",
@@ -102,6 +106,7 @@ export default function Home() {
       description: "We are looking for a marketing manager to join our team.",
       employment_type: "Full-time",
       categories: ["Marketing"],
+      slug: "marketing-manager",
       company: {
         name: "JobWise",
         logo: "/jobs/brand.svg",
@@ -113,6 +118,7 @@ export default function Home() {
       description: "We are looking for a finance manager to join our team.",
       employment_type: "Full-time",
       categories: ["Finance"],
+      slug: "finance-manager",
       company: {
         name: "JobWise",
         logo: "/jobs/brand.svg",
@@ -124,6 +130,7 @@ export default function Home() {
       description: "We are looking for a sales manager to join our team.",
       employment_type: "Full-time",
       categories: ["Sales"],
+      slug: "sales-manager",
       company: {
         name: "JobWise",
         logo: "/jobs/brand.svg",
@@ -136,6 +143,7 @@ export default function Home() {
         "We are looking for a human resources manager to join our team.",
       employment_type: "Full-time",
       categories: ["Human Resources"],
+      slug: "human-resources-manager",
       company: {
         name: "JobWise",
         logo: "/jobs/brand.svg",
@@ -502,13 +510,14 @@ export default function Home() {
         </div>
         <div className="mt-6 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           {jobItems.map((job, index) => (
-            <div
+            <Link
+              to={`/jobs/${job.slug}`}
               key={`${index}-job`}
-              className="border-2 hover:border-blue-700 flex flex-col gap-4 p-4"
+              className="border-2 group hover:bg-blue-700 hover:text-white flex flex-col gap-4 p-4 transition duration-300 ease-in-out"
             >
               <div className="flex justify-between items-center">
                 <img src={job.company.logo} alt="" />
-                <div className="py-1 px-3 border border-blue-700">
+                <div className="py-1 px-3 border border-blue-700 group-hover:border-white">
                   {job.employment_type}
                 </div>
               </div>
@@ -522,7 +531,7 @@ export default function Home() {
                   {job.categories.map((category, index) => (
                     <div key={`${index}-${job.title}`}>
                       <span
-                        className={`text-blue-700 bg-blue-700/20 rounded-full py-1 px-3`}
+                        className={`text-blue-700 bg-blue-700/20 rounded-full py-1 px-3 group-hover:text-blue-700 group-hover:bg-white`}
                       >
                         {category}
                       </span>
@@ -530,7 +539,7 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
           ;
         </div>
