@@ -1,4 +1,14 @@
-import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import {
+  BreadcrumbItem,
+  Breadcrumbs,
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  useDisclosure,
+} from "@nextui-org/react";
 import { Link, useParams } from "react-router-dom";
 import FeBookmark from "../../components/SavedJobs";
 import ArrowRight from "../../components/ArrowRight";
@@ -7,9 +17,18 @@ import CalendarIcon from "../../components/CalendarIcon";
 import LevelIcon from "../../components/LevelIcon";
 import Person from "../../components/Person";
 import ShareIcon from "../../components/ShareIcon";
+import CoverLetterIcon from "../../components/CoverLetter";
+import ResumeIcon from "../../components/Resume";
+import { useState } from "react";
+import { Field, Form, Formik, FormikHelpers } from "formik";
 
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
+  interface FormApply {
+    cover_letter: string;
+    resume: string;
+  }
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const post = {
     id: 1,
     recruiter_id: 123,
@@ -36,6 +55,28 @@ export default function PostDetail() {
         logo: "/jobs/brand.svg",
       },
     },
+  };
+
+  const [submitMessage, setSubmitMessage] = useState("");
+  const applyHandler = async (
+    values: FormApply,
+    { setSubmitting, resetForm }: FormikHelpers<FormApply>
+  ) => {
+    console.log("oke");
+    try {
+      const response = { status: 200, data: values };
+      if (response.status == 200) {
+        setSubmitMessage("Application successful!");
+        resetForm();
+        console.log("testt");
+      } else {
+        setSubmitMessage("Application failed! Please try again.");
+      }
+    } catch (error) {
+      setSubmitMessage("Application failed! Please try again.");
+      console.log(error);
+    }
+    setSubmitting(false);
   };
   return (
     <div>
@@ -77,9 +118,85 @@ export default function PostDetail() {
             <button className="bg-[#E7F0FA] py-1 px-1 lg:py-3 lg:px-3 rounded-md w-auto">
               <FeBookmark />
             </button>
-            <button className="py-1 px-3 lg:py-3 lg:px-5 bg-blue-700 text-white flex justify-center items-center gap-2">
+            <Button
+              onPress={onOpen}
+              className="py-1 px-3 lg:py-3 lg:px-5 bg-blue-700 text-white flex justify-center items-center gap-2"
+            >
               <span>Apply Now</span> <ArrowRight />
-            </button>
+            </Button>
+            <Modal
+              isOpen={isOpen}
+              onOpenChange={onOpenChange}
+              placement="top-center"
+            >
+              <ModalContent>
+                {(onClose) => (
+                  <>
+                    <ModalHeader className="flex flex-col gap-1">
+                      Apply for Work
+                    </ModalHeader>
+                    <ModalBody>
+                      <Formik
+                        initialValues={{ cover_letter: "", resume: "" }}
+                        onSubmit={applyHandler}
+                      >
+                        {({ isSubmitting }) => (
+                          <Form>
+                            <div className="mt-4">
+                              <Field
+                                type="file"
+                                className="block w-full py-2 rounded-md"
+                                name="cover_letter"
+                                as={InputForm}
+                                label="Cover Letter"
+                                autoFocus
+                                endContent={
+                                  <CoverLetterIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                }
+                                required
+                              ></Field>
+                            </div>
+                            <div className="mt-4">
+                              <Field
+                                type="file"
+                                className="block w-full py-2 rounded-md"
+                                name="resume"
+                                as={InputForm}
+                                label="Resume"
+                                endContent={
+                                  <ResumeIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                }
+                                required
+                              ></Field>
+                            </div>
+                            <div>
+                              <p>{submitMessage && submitMessage}</p>
+                            </div>
+                            <div className="mt-4 flex justify-end gap-2 items-center">
+                              <Button
+                                color="danger"
+                                variant="flat"
+                                onPress={onClose}
+                              >
+                                Close
+                              </Button>
+                              <button
+                                color="primary"
+                                className="py-2 px-5 bg-blue-600 text-white rounded-xl"
+                                disabled={isSubmitting}
+                                type="submit"
+                              >
+                                Apply!
+                              </button>
+                            </div>
+                          </Form>
+                        )}
+                      </Formik>
+                    </ModalBody>
+                  </>
+                )}
+              </ModalContent>
+            </Modal>
           </div>
         </div>
         <div className="mt-4 container mx-auto p-2">
@@ -105,7 +222,7 @@ export default function PostDetail() {
                 nostrum quibusdam?
               </p>
               <h3 className="font-semibold text-sm mt-4">Requirements</h3>
-              <p className="text-sm text-justify">
+              <div className="text-sm text-justify">
                 <ul className="list-disc mx-4">
                   <li className="my-1">{post.requirements}</li>
                   <li className="my-1">
@@ -134,7 +251,7 @@ export default function PostDetail() {
                   </li>
                   <li className="my-1">Strong problem-solving skills</li>
                 </ul>
-              </p>
+              </div>
 
               <h3 className="font-semibold text-sm mt-4">Benefits</h3>
               <ul className="list-disc mx-4">
@@ -206,4 +323,7 @@ function formatString(input: string) {
   return input
     .replace(/[_-]/g, " ")
     .replace(/\b\w/g, (char: string) => char.toUpperCase());
+}
+function InputForm(props: { label: string; type: string }) {
+  return <Input {...props} variant="bordered" />;
 }
