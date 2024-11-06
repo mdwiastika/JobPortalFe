@@ -7,6 +7,7 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
+  Tooltip,
   useDisclosure,
 } from "@nextui-org/react";
 import { Link, useParams } from "react-router-dom";
@@ -115,9 +116,11 @@ export default function PostDetail() {
             </div>
           </div>
           <div className="lg:w-1/3 flex justify-start items-center gap-3">
-            <button className="bg-[#E7F0FA] py-1 px-1 lg:py-3 lg:px-3 rounded-md w-auto">
-              <FeBookmark />
-            </button>
+            <Tooltip showArrow={true} content="Add to bookmark" color="primary">
+              <button className="bg-[#E7F0FA] py-1 px-1 lg:py-2 lg:px-2 rounded-md w-auto">
+                <FeBookmark />
+              </button>
+            </Tooltip>
             <Button
               onPress={onOpen}
               className="py-1 px-3 lg:py-3 lg:px-5 bg-blue-700 text-white flex justify-center items-center gap-2"
