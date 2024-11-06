@@ -176,7 +176,7 @@ export default function PostDetail() {
                     <LevelIcon />
                     <span className="text-slate-700">Job Level</span>
                     <span className="font-semibold">
-                      {post.experience_level}
+                      {formatString(post.experience_level)} Level
                     </span>
                   </div>
                   <div className="flex flex-col items-center justify-center">
