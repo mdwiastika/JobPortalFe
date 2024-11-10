@@ -28,10 +28,16 @@ import { Rating } from "@smastrom/react-rating";
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
   interface FormApply {
-    cover_letter: string;
-    resume: string;
+    cover_letter: "";
+    resume: "";
+  }
+  interface FormReview {
+    review: string;
+    star: number;
   }
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [resume, setResume] = useState<File>();
+  const [coverLetter, setCoverLetter] = useState<File>();
   const post = {
     id: 1,
     recruiter_id: 123,
@@ -98,13 +104,37 @@ export default function PostDetail() {
   const [submitMessage, setSubmitMessage] = useState("");
   const [reviewMessage, setReviewMessage] = useState("");
   const [rating, setRating] = useState(0);
-
+  const handleResumeFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedFile = event.currentTarget.files?.[0];
+    if (selectedFile) {
+      setResume(selectedFile);
+    }
+  };
+  const handleCoverLetterFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedFile = event.currentTarget.files?.[0];
+    if (selectedFile) {
+      setCoverLetter(selectedFile);
+    }
+  };
   const reviewHandler = async (
-    values: FormApply,
-    { setSubmitting, resetForm }: FormikHelpers<FormApply>
+    values: FormReview,
+    { setSubmitting, resetForm }: FormikHelpers<FormReview>
   ) => {
     try {
-      const response = { status: 200, data: values };
+      const response = {
+        status: 200,
+        data: values,
+        file: [
+          {
+            resume: resume,
+            cover_letter: coverLetter,
+          },
+        ],
+      };
       if (response.status == 200) {
         setReviewMessage("Review successful!");
         resetForm();
@@ -198,7 +228,10 @@ export default function PostDetail() {
                     </ModalHeader>
                     <ModalBody>
                       <Formik
-                        initialValues={{ cover_letter: "", resume: "" }}
+                        initialValues={{
+                          cover_letter: "",
+                          resume: "",
+                        }}
                         onSubmit={applyHandler}
                       >
                         {({ isSubmitting }) => (
@@ -214,6 +247,7 @@ export default function PostDetail() {
                                 endContent={
                                   <CoverLetterIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                                 }
+                                onChange={handleCoverLetterFileChange}
                                 required
                               ></Field>
                             </div>
@@ -227,6 +261,7 @@ export default function PostDetail() {
                                 endContent={
                                   <ResumeIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                                 }
+                                onChange={handleResumeFileChange}
                                 required
                               ></Field>
                             </div>
@@ -400,7 +435,7 @@ export default function PostDetail() {
             <div className="col-span-5 lg:col-span-3 bg-slate-100/60 p-2 lg:p-4">
               <h3 className="font-semibold text-base">Write a Review</h3>
               <Formik
-                initialValues={{ cover_letter: "", resume: "" }}
+                initialValues={{ review: "", star: rating }}
                 onSubmit={reviewHandler}
               >
                 {({ isSubmitting }) => (
@@ -416,10 +451,18 @@ export default function PostDetail() {
                       <Field
                         type="text"
                         className="block w-full py-2 rounded-md"
-                        name="cover_letter"
+                        name="review"
                         as={InputForm}
                         label="Review"
                         autoFocus
+                        required
+                      ></Field>
+                      <Field
+                        type="hidden"
+                        className="block w-full py-2 rounded-md"
+                        name="star"
+                        value={rating}
+                        label="Star"
                         required
                       ></Field>
                     </div>
