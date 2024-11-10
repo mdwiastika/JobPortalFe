@@ -6,6 +6,7 @@ import FormatString from "../../components/FormatString";
 import PinPointJobIcon from "../../components/PinPointJobIcon";
 import TimeIcon from "../../components/TimeIcon";
 import Sidebar from "../partials/Sidebar";
+import { useEffect } from "react";
 
 export default function SavedJobs() {
   const jobPostings = [
@@ -106,6 +107,9 @@ export default function SavedJobs() {
   const removeSavedJob = (id: number) => {
     console.log(`Remove saved job with ID: ${id}`);
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="bg-slate-100/60 py-4">
       <div className="container mx-auto grid grid-cols-4 gap-4">

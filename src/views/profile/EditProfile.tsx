@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Sidebar from "../partials/Sidebar";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import InputForm from "../../components/InputForm";
@@ -201,6 +201,9 @@ export default function EditProfile() {
       console.log(error);
     }
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="bg-slate-100/60 py-4">
       <div className="container mx-auto grid grid-cols-4 gap-4">

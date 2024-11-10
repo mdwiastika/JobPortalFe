@@ -8,6 +8,7 @@ import {
 } from "@nextui-org/react";
 import Sidebar from "../partials/Sidebar";
 import FormatString from "../../components/FormatString";
+import { useEffect } from "react";
 
 export default function AppliedJobs() {
   // arr object (job_posting: {title, slug, recuriter, company, location, created_at})
@@ -70,6 +71,9 @@ export default function AppliedJobs() {
       },
     },
   ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="bg-slate-100/60 py-4">
       <div className="container mx-auto grid grid-cols-4 gap-4">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import signUpImage from "/sign-up-banner.png";
 import { Field, Form, Formik, FormikHelpers } from "formik";
@@ -55,6 +55,9 @@ export default function Signup() {
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
     return (
       <div className="flex justify-center p-4 flex-col-reverse lg:flex-row">
         <div className="lg:w-1/2">

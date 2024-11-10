@@ -20,7 +20,7 @@ import Person from "../../components/Person";
 import ShareIcon from "../../components/ShareIcon";
 import CoverLetterIcon from "../../components/CoverLetter";
 import ResumeIcon from "../../components/Resume";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import "@smastrom/react-rating/style.css";
 import { Rating } from "@smastrom/react-rating";
@@ -167,6 +167,9 @@ export default function PostDetail() {
     }
     setSubmitting(false);
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div>
       <div className="bg-slate-100">

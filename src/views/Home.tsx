@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import heroImage from "/hero-person1.png";
 import adminImage from "/admin.webp";
+import { useEffect } from "react";
 export default function Home() {
   const categoryItems = [
     {
@@ -151,6 +152,9 @@ export default function Home() {
       location: "Jakarta, Indonesia",
     },
   ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <main className="">
       <section className="min-h-[calc(100vh-65px)] flex justify-center items-center bg-blue-100/50">

@@ -344,6 +344,9 @@ export default function PostIndex() {
   const handleWorkTypeChange = (range: string) => {
     setSelectedWorkTypeRange(range);
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div>
       <div className="container mx-auto py-4 px-2 lg:px-0">

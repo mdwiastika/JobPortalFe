@@ -54,7 +54,6 @@ export default function App() {
       setNameMenu(item.name);
     }
   }, [location.pathname]);
-
   return (
     <main className="font-montserrat">
       <HelmetProvider>

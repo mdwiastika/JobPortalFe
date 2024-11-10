@@ -1,7 +1,7 @@
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Link } from "react-router-dom";
 import signUpImage from "/sign-up-banner.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Input } from "@nextui-org/react";
 export default function Login() {
@@ -30,6 +30,9 @@ export default function Login() {
     }
     setSubmitting(false);
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <section className="min-h-[calc(100vh-65px)] relative flex justify-center items-center z-30">
       <HelmetProvider>
