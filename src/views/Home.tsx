@@ -5,49 +5,49 @@ export default function Home() {
   const categoryItems = [
     {
       name: "Engineering",
-      url: "/engineering",
+      slug: "engineering",
       icon: "/category/engineering.svg",
       jobs: 1000,
     },
     {
       name: "Marketing",
-      url: "/marketing",
+      slug: "marketing",
       icon: "/category/marketing.svg",
       jobs: 890,
     },
     {
       name: "Design",
-      url: "/design",
+      slug: "design",
       icon: "/category/design.svg",
       jobs: 750,
     },
     {
       name: "Finance",
-      url: "/finance",
+      slug: "finance",
       icon: "/category/finance.svg",
       jobs: 700,
     },
     {
       name: "Sales",
-      url: "/sales",
+      slug: "sales",
       icon: "/category/sales.svg",
       jobs: 650,
     },
     {
       name: "Business",
-      url: "/business",
+      slug: "business",
       icon: "/category/business.svg",
       jobs: 600,
     },
     {
       name: "Human Resources",
-      url: "/human-resources",
+      slug: "human-resources",
       icon: "/category/human-resource.svg",
       jobs: 550,
     },
     {
       name: "Information Technology",
-      url: "/information-technology",
+      slug: "information-technology",
       icon: "/category/technology.svg",
       jobs: 500,
     },
@@ -427,7 +427,7 @@ export default function Home() {
               <img src={category.icon} className="w-6 h-auto md:w-10" alt="" />
               <h2 className="text-xl font-bold">{category.name}</h2>
               <Link
-                to={category.url}
+                to={`jobs/category/${category.slug}`}
                 className="flex justify-start items-center gap-2"
               >
                 <span className="text-sm">{category.jobs} jobs available</span>
