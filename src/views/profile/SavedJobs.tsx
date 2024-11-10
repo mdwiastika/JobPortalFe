@@ -1,12 +1,12 @@
 import Sidebar from "../partials/Sidebar";
 
-export default function EditProfile() {
+export default function SavedJobs() {
   return (
     <div className="bg-slate-100/60 py-4">
       <div className="container mx-auto grid grid-cols-4 gap-4">
         <Sidebar />
         <div className="content bg-white col-span-3 min-h-screen">
-          <h1>Edit Profile</h1>
+          <h1>Saved Jobs</h1>
           <form>
             <div className="form-group">
               <label htmlFor="name">Name</label>

@@ -22,6 +22,8 @@ import CoverLetterIcon from "../../components/CoverLetter";
 import ResumeIcon from "../../components/Resume";
 import { useState } from "react";
 import { Field, Form, Formik, FormikHelpers } from "formik";
+import "@smastrom/react-rating/style.css";
+import { Rating } from "@smastrom/react-rating";
 
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -45,6 +47,7 @@ export default function PostDetail() {
     location: "New York, NY",
     is_disability: false,
     created_at: "2024-11-01",
+    skiils: ["Java", "C++", "JavaScript"],
     recruiter: {
       user: {
         full_name: "John Doe",
@@ -57,8 +60,63 @@ export default function PostDetail() {
       },
     },
   };
+  const reviews = [
+    {
+      star: 5,
+      review: "Great company to work with!",
+      user: {
+        full_name: "John Doe",
+        email: "johndoe@gmail.com",
+      },
+    },
+    {
+      star: 4,
+      review: "Good company to work with!",
+      user: {
+        full_name: "Jane Doe",
+        email: "janedoe@gmail.com",
+      },
+    },
+    {
+      star: 3,
+      review: "Average company to work with!",
+      user: {
+        full_name: "Budi sudarsono",
+        email: "budisurarsono@gmail.com",
+      },
+    },
+    {
+      star: 2,
+      review: "Bad company to work with!",
+      user: {
+        full_name: "Andi Hermawan",
+        email: "andihermawan@gmail.com",
+      },
+    },
+  ];
 
   const [submitMessage, setSubmitMessage] = useState("");
+  const [reviewMessage, setReviewMessage] = useState("");
+  const [rating, setRating] = useState(0);
+
+  const reviewHandler = async (
+    values: FormApply,
+    { setSubmitting, resetForm }: FormikHelpers<FormApply>
+  ) => {
+    try {
+      const response = { status: 200, data: values };
+      if (response.status == 200) {
+        setReviewMessage("Review successful!");
+        resetForm();
+      } else {
+        setReviewMessage("Review failed! Please try again.");
+      }
+    } catch (error) {
+      setReviewMessage("Review failed! Please try again.");
+      console.log(error);
+    }
+    setSubmitting(false);
+  };
   const applyHandler = async (
     values: FormApply,
     { setSubmitting, resetForm }: FormikHelpers<FormApply>
@@ -308,6 +366,22 @@ export default function PostDetail() {
                   </div>
                 </div>
                 <div className="border-t-2 mt-4">
+                  <h3 className="font-semibold text-base">
+                    Skill Requirements
+                  </h3>
+                  <div className="mt-6 text-sm grid grid-flow-col auto-cols-max gap-2">
+                    {post.skiils.map((skill, index) => (
+                      <div key={`${index}-${skill}`}>
+                        <span
+                          className={`text-blue-700 bg-blue-700/20 rounded-full py-1 px-3 group-hover:text-blue-700 group-hover:bg-white`}
+                        >
+                          {skill}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="border-t-2 mt-4">
                   <h3 className="font-semibold text-base">Share this job</h3>
                   <div className="mt-4 text-[#0A65CC] bg-[#E7F0FA] w-40 flex justify-center items-center py-1 px-3 gap-2">
                     <ShareIcon />
@@ -316,6 +390,75 @@ export default function PostDetail() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div className="container mx-auto mt-4">
+        <h2 className="text-lg lg:text-base font-semibold mx-2">Reviews</h2>
+        <div className="">
+          <div className="grid grid-cols-5 gap-2">
+            <div className="col-span-5 lg:col-span-3 bg-slate-100/60 p-2 lg:p-4">
+              <h3 className="font-semibold text-base">Write a Review</h3>
+              <Formik
+                initialValues={{ cover_letter: "", resume: "" }}
+                onSubmit={reviewHandler}
+              >
+                {({ isSubmitting }) => (
+                  <Form>
+                    <div className="mt4">
+                      <Rating
+                        value={rating}
+                        onChange={setRating}
+                        className="max-w-40"
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <Field
+                        type="text"
+                        className="block w-full py-2 rounded-md"
+                        name="cover_letter"
+                        as={InputForm}
+                        label="Review"
+                        autoFocus
+                        required
+                      ></Field>
+                    </div>
+                    <div>
+                      <p>{reviewMessage && reviewMessage}</p>
+                    </div>
+                    <div className="mt-4 flex justify-end gap-2 items-center">
+                      <button
+                        className="py-2 px-5 bg-blue-600 text-white rounded-xl"
+                        disabled={isSubmitting}
+                        type="submit"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8">
+          <h3 className="font-semibold text-base mx-2">All Reviews</h3>
+          <div className="grid grid-cols-5 gap-2">
+            {reviews.map((review, index) => (
+              <div
+                key={`${index}-${review.user.full_name}`}
+                className="col-span-5 lg:col-span-3 bg-slate-100/60 p-2 lg:p-4"
+              >
+                <div className="flex justify-between items-center">
+                  <h4 className="text-sm font-bold">{review.user.full_name}</h4>
+                  <div className="flex items-center gap-2">
+                    <Rating value={review.star} readOnly className="max-w-24" />
+                    <span>{review.star}</span>
+                  </div>
+                </div>
+                <p className="text-sm text-justify">{review.review}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

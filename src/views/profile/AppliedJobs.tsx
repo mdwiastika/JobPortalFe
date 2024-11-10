@@ -1,6 +1,6 @@
 import Sidebar from "../partials/Sidebar";
 
-export default function EditProfile() {
+export default function AppliedJobs() {
   return (
     <div className="bg-slate-100/60 py-4">
       <div className="container mx-auto grid grid-cols-4 gap-4">

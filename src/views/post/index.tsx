@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PinPointIcon from "../../components/PinPointIcon";
 import SearchIcon from "../../components/SearchIcon";
 import TimeIcon from "../../components/TimeIcon";
@@ -33,6 +33,20 @@ export default function PostIndex() {
     "Last 30 days",
     "All",
   ];
+  useEffect(() => {
+    console.log(
+      `Salary: ${selectedSalaryRange}, Date Posting: ${selectedDatePostingRange}, Level Experience: ${selectedLevelExperienceRange}, Type Job: ${selectedTypeJobRange}, Work Type: ${selectedWorkTypeRange}`
+    );
+  }, [
+    selectedSalaryRange,
+    selectedDatePostingRange,
+    selectedLevelExperienceRange,
+    selectedTypeJobRange,
+    selectedWorkTypeRange,
+  ]);
+  useEffect(() => {
+    console.log(`Current Page: ${currentPage}`);
+  }, [currentPage]);
   const levelExperienceRange = ["Beginner", "Medium", "Expert"];
   const typeJobRange = ["Full-time", "Part-time", "Contract", "Internship"];
   const workTypeRange = ["Remote", "On-site", "Hybrid"];
