@@ -109,16 +109,6 @@ export function DashboardLayout({
                         />
                       ),
                     },
-                    {
-                      label: "Settings",
-                      href: "#",
-                      icon: (
-                        <Iconify
-                          width={22}
-                          icon="solar:settings-bold-duotone"
-                        />
-                      ),
-                    },
                   ]}
                 />
               </Box>
