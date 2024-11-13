@@ -18,7 +18,7 @@ import { NavUpgrade } from "../components/nav-upgrade";
 import { WorkspacesPopover } from "../components/workspaces-popover";
 
 import type { WorkspacesPopoverProps } from "../components/workspaces-popover";
-import Logo from "../../../../components/Logo";
+import { Logo } from "../../../../components/Logo";
 
 // ----------------------------------------------------------------------
 
