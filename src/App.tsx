@@ -8,8 +8,9 @@ import PostDetail from "./views/post/PostDetail";
 import EditProfile from "./views/profile/EditProfile";
 import SavedJobs from "./views/profile/SavedJobs";
 import AppliedJobs from "./views/profile/AppliedJobs";
-import AdminHeader from "./views/partials/AdminHeader";
 import Dashboard from "./views/admin/page/Dashboard";
+import AdminHeader from "./views/admin/partials/AdminHeader";
+import { ThemeProvider } from "./theme/theme-provider";
 
 const router = createBrowserRouter([
   {
@@ -39,9 +40,9 @@ const router = createBrowserRouter([
 ]);
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <RouterProvider router={router} />
-    </>
+    </ThemeProvider>
   );
 }
 export default App;
