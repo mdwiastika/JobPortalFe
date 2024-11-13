@@ -11,7 +11,7 @@ import { RouterLink } from "src/routes/components";
 
 import { varAlpha } from "src/theme/styles";
 
-import Logo from "src/components/logo";
+import Logo from "src/components/Logo";
 import { Scrollbar } from "src/components/scrollbar";
 
 import { NavUpgrade } from "../components/nav-upgrade";
