@@ -1,4 +1,3 @@
-import { Label } from "../../../components/label";
 import { SvgColor } from "../../../components/svg-color";
 
 // ----------------------------------------------------------------------
@@ -14,37 +13,42 @@ const icon = (name: string) => (
 export const navData = [
   {
     title: "Dashboard",
-    path: "/",
+    path: "/admin/dashboard",
     icon: icon("ic-analytics"),
   },
   {
-    title: "User",
-    path: "/user",
+    title: "Users",
+    path: "/admin/users",
     icon: icon("ic-user"),
   },
   {
-    title: "Product",
-    path: "/products",
-    icon: icon("ic-cart"),
-    info: (
-      <Label color="error" variant="inverted">
-        +3
-      </Label>
-    ),
+    title: "Companies",
+    path: "/admin/companies",
+    icon: icon("ic-company"),
   },
   {
-    title: "Blog",
-    path: "/blog",
-    icon: icon("ic-blog"),
+    title: "Skills",
+    path: "/admin/skills",
+    icon: icon("ic-skills"),
   },
   {
-    title: "Sign in",
-    path: "/sign-in",
-    icon: icon("ic-lock"),
+    title: "Categories",
+    path: "/admin/categories",
+    icon: icon("ic-category"),
   },
   {
-    title: "Not found",
-    path: "/404",
-    icon: icon("ic-disabled"),
+    title: "Job Posts",
+    path: "/admin/posts",
+    icon: icon("ic-post"),
+  },
+  {
+    title: "Job Applications",
+    path: "/admin/job-applications",
+    icon: icon("ic-jobapp"),
+  },
+  {
+    title: "Logout",
+    path: "/admin/sign-in",
+    icon: icon("ic-logout"),
   },
 ];

@@ -11,6 +11,12 @@ import AppliedJobs from "./views/profile/AppliedJobs";
 import Dashboard from "./views/admin/page/Dashboard";
 import AdminHeader from "./views/admin/partials/AdminHeader";
 import { ThemeProvider } from "./theme/theme-provider";
+import Users from "./views/admin/page/Users";
+import Companies from "./views/admin/page/Companies";
+import Skiils from "./views/admin/page/Skiils";
+import Categories from "./views/admin/page/Categories";
+import JobPosts from "./views/admin/page/JobPosts";
+import JobApplications from "./views/admin/page/JobApplications";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +40,13 @@ const router = createBrowserRouter([
     element: <AdminHeader />,
     children: [
       { index: true, element: <Dashboard /> },
-      { path: "dashboard", element: <Dashboard /> }, // Hanya "dashboard" tanpa "/admin"
+      { path: "dashboard", element: <Dashboard /> },
+      { path: "users", element: <Users /> },
+      { path: "companies", element: <Companies /> },
+      { path: "skills", element: <Skiils /> },
+      { path: "categories", element: <Categories /> },
+      { path: "posts", element: <JobPosts /> },
+      { path: "job-applications", element: <JobApplications /> },
     ],
   },
 ]);
