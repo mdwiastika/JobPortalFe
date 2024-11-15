@@ -1,6 +1,6 @@
 import type { Theme, SxProps, Breakpoint } from "@mui/material/styles";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
@@ -22,6 +22,9 @@ import { HeaderSection } from "../core/header-section";
 import { AccountPopover } from "../components/account-popover";
 import { LanguagePopover } from "../components/language-popover";
 import { NotificationsPopover } from "../components/notifications-popover";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+import icon from "/job-wise2.png";
+import { useLocation } from "react-router-dom";
 
 // ----------------------------------------------------------------------
 
@@ -41,9 +44,15 @@ export function DashboardLayout({
   const theme = useTheme();
 
   const [navOpen, setNavOpen] = useState(false);
-
+  const location = useLocation();
+  const [nameMenu, setNameMenu] = useState("Home");
+  useEffect(() => {
+    const item = navData.find((item) => item.path === location.pathname);
+    if (item) {
+      setNameMenu(item.title);
+    }
+  }, [location.pathname]);
   const layoutQuery: Breakpoint = "lg";
-
   return (
     <LayoutSection
       /** **************************************
@@ -78,7 +87,7 @@ export function DashboardLayout({
                   data={navData}
                   open={navOpen}
                   onClose={() => setNavOpen(false)}
-                  workspaces={_workspaces}
+                  _workspaces={_workspaces}
                 />
               </>
             ),
@@ -123,7 +132,7 @@ export function DashboardLayout({
         <NavDesktop
           data={navData}
           layoutQuery={layoutQuery}
-          workspaces={_workspaces}
+          _workspaces={_workspaces}
         />
       }
       /** **************************************
@@ -148,6 +157,12 @@ export function DashboardLayout({
         ...sx,
       }}
     >
+      <HelmetProvider>
+        <Helmet>
+          <title>JobWise | {nameMenu}</title>
+          <link rel="shortcut icon" href={icon} type="image/x-icon" />
+        </Helmet>
+      </HelmetProvider>
       <Main>{children}</Main>
     </LayoutSection>
   );
