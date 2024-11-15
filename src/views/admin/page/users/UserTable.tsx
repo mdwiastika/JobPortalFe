@@ -1,115 +1,190 @@
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { motion } from "framer-motion";
-import { Search, Edit, Trash } from "lucide-react"; // Import icons
+import { Search, Edit, Trash } from "lucide-react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Popup from "reactjs-popup";
 import ReactPaginate from "react-paginate";
 
-const UsersTable = () => {
-  interface User {
-    id: number;
-    email: string;
-    name: string;
-    status: string;
-    role: string;
-  }
-  const [searchTerm, setSearchTerm] = useState("");
+// Define interfaces
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  status: UserStatus;
+  role: string;
+}
+
+// Using literal types for better type safety
+type UserStatus = "Active" | "Inactive";
+
+// Props for form components
+interface EditUserFormProps {
+  user: User;
+  onSubmit: (updatedUser: User) => void;
+}
+
+// Sample data interface
+interface UserData {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+}
+
+const EditUserForm = ({ user, onSubmit }: EditUserFormProps): JSX.Element => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    const updatedUser: User = {
+      ...user,
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      role: formData.get("role") as string,
+      status: formData.get("status") as UserStatus,
+    };
+
+    onSubmit(updatedUser);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-300">Name</label>
+        <input
+          type="text"
+          name="name"
+          defaultValue={user.name}
+          className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-300">Email</label>
+        <input
+          type="email"
+          name="email"
+          defaultValue={user.email}
+          className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-300">Role</label>
+        <select
+          name="role"
+          defaultValue={user.role}
+          className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        >
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-300">
+          Status
+        </label>
+        <select
+          name="status"
+          defaultValue={user.status}
+          className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        >
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+      <button
+        type="submit"
+        className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-500"
+      >
+        Save Changes
+      </button>
+    </form>
+  );
+};
+
+const UsersTable = (): JSX.Element => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [currentPage, setCurrentPage] = useState(0); // Update to 0 for pagination index
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const usersPerPage = 5;
 
-  // Fetch users from the API
-  const fetchUsers = async () => {
+  const fetchUsers = async (): Promise<void> => {
     try {
-      const data = [
+      const sampleData: UserData[] = [
         {
           id: 1,
           email: "john.doe@example.com",
           name: "John Doe",
-          status: "Active",
           role: "Student",
         },
         {
           id: 2,
           email: "jane.smith@example.com",
           name: "Jane Smith",
-          status: "Inactive",
           role: "Teacher",
         },
         {
           id: 3,
           email: "michael.jones@example.com",
           name: "Michael Jones",
-          status: "Active",
           role: "Admin",
         },
         {
           id: 4,
           email: "emily.davis@example.com",
           name: "Emily Davis",
-          status: "Active",
           role: "Student",
         },
         {
           id: 5,
           email: "william.brown@example.com",
           name: "William Brown",
-          status: "Inactive",
           role: "Teacher",
         },
         {
           id: 6,
           email: "olivia.wilson@example.com",
           name: "Olivia Wilson",
-          status: "Active",
           role: "Student",
         },
         {
           id: 7,
           email: "james.moore@example.com",
           name: "James Moore",
-          status: "Active",
           role: "Admin",
         },
         {
           id: 8,
           email: "isabella.taylor@example.com",
           name: "Isabella Taylor",
-          status: "Inactive",
           role: "Teacher",
         },
         {
           id: 9,
           email: "ethan.anderson@example.com",
           name: "Ethan Anderson",
-          status: "Active",
           role: "Student",
         },
         {
           id: 10,
           email: "mia.thomas@example.com",
           name: "Mia Thomas",
-          status: "Active",
           role: "Admin",
         },
       ];
-      if (Array.isArray(data)) {
-        const usersWithRoles: User[] = data
-          .filter((user) => user.email !== "superadmin@gmail.com") // Exclude superadmin
-          .map((user) => ({
-            ...user,
-            role: "Student", // Default role
-            status: "Active", // Default status
-          }));
-        setUsers(usersWithRoles);
-        setFilteredUsers(usersWithRoles);
-      } else {
-        console.error("Unexpected data format", data);
-        toast.error("Failed to fetch users.");
-      }
+
+      const usersWithRoles: User[] = sampleData
+        .filter((user) => user.email !== "superadmin@gmail.com")
+        .map((user) => ({
+          ...user,
+          status: Math.random() > 0.5 ? "Active" : "Inactive",
+        }));
+
+      setUsers(usersWithRoles);
+      setFilteredUsers(usersWithRoles);
     } catch (error) {
       console.error("Error fetching users:", error);
       toast.error("Failed to fetch users.");
@@ -120,10 +195,10 @@ const UsersTable = () => {
     fetchUsers();
   }, []);
 
-  // Handle search input and filter the users
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>): void => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
+
     const filtered = users.filter(
       (user) =>
         user.name.toLowerCase().includes(term) ||
@@ -132,16 +207,8 @@ const UsersTable = () => {
     setFilteredUsers(filtered);
   };
 
-  // Pagination logic
-  const indexOfLastUser = (currentPage + 1) * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
-  // Handle delete user
-  const handleDelete = (userId: number) => {
-    Swal.fire({
+  const handleDelete = async (userId: number): Promise<void> => {
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -152,21 +219,20 @@ const UsersTable = () => {
         confirmButton: "swal-custom-cursor",
         cancelButton: "swal-custom-cursor",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setUsers(users.filter((user) => user.id !== userId));
-        setFilteredUsers(filteredUsers.filter((user) => user.id !== userId));
-      }
     });
+
+    if (result.isConfirmed) {
+      setUsers(users.filter((user) => user.id !== userId));
+      setFilteredUsers(filteredUsers.filter((user) => user.id !== userId));
+      toast.success("User deleted successfully");
+    }
   };
 
-  // Handle update user (show update modal)
-  const handleUpdate = (user: User) => {
+  const handleUpdate = (user: User): void => {
     setSelectedUser(user);
   };
 
-  // Handle form submission for updating user
-  const handleSubmitUpdate = (updatedUser: User) => {
+  const handleSubmitUpdate = (updatedUser: User): void => {
     setUsers(
       users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     );
@@ -175,22 +241,38 @@ const UsersTable = () => {
         user.id === updatedUser.id ? updatedUser : user
       )
     );
+    setSelectedUser(null);
+    toast.success("User updated successfully");
+  };
+
+  const indexOfLastUser = (currentPage + 1) * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  const handlePageChange = ({ selected }: { selected: number }): void => {
+    setCurrentPage(selected);
+  };
+
+  const getStatusClassName = (status: UserStatus): string => {
+    return status === "Active"
+      ? "bg-green-800 text-green-100"
+      : "bg-red-800 text-red-100";
   };
 
   return (
     <motion.div
-      className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
+      className="bg-white bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 text-slate-900"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-100">Users</h2>
+        <h2 className="text-xl font-semibold text-slate-900">Users</h2>
         <div className="relative">
           <input
             type="text"
             placeholder="Search users..."
-            className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-gray-100 text-gray-800 placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchTerm}
             onChange={handleSearch}
           />
@@ -202,19 +284,19 @@ const UsersTable = () => {
         <table className="min-w-full divide-y divide-gray-700">
           <thead>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                 Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                 Email
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                 Role
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -237,14 +319,14 @@ const UsersTable = () => {
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-100">
+                        <div className="text-sm font-medium text-gray-900">
                           {user.name}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">{user.email}</div>
+                    <div className="text-sm text-gray-900">{user.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
@@ -253,11 +335,9 @@ const UsersTable = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        user.status === "Active"
-                          ? "bg-green-800 text-green-100"
-                          : "bg-red-800 text-red-100"
-                      }`}
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClassName(
+                        user.status
+                      )}`}
                     >
                       {user.status}
                     </span>
@@ -292,13 +372,12 @@ const UsersTable = () => {
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="mt-4">
         <ReactPaginate
           previousLabel={"Previous"}
           nextLabel={"Next"}
           pageCount={Math.ceil(filteredUsers.length / usersPerPage)}
-          onPageChange={({ selected }) => paginate(selected)}
+          onPageChange={handlePageChange}
           containerClassName={"pagination"}
           pageClassName={"page-item"}
           pageLinkClassName={"page-link"}
@@ -311,7 +390,6 @@ const UsersTable = () => {
         />
       </div>
 
-      {/* Edit Popup */}
       <Popup
         open={selectedUser !== null}
         closeOnDocumentClick
@@ -320,71 +398,7 @@ const UsersTable = () => {
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
           <h2 className="text-xl text-white font-semibold mb-4">Edit User</h2>
           {selectedUser && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmitUpdate({
-                  ...selectedUser,
-                  name: e.target.name.value,
-                  email: e.target.email.value,
-                  role: e.target.role.value,
-                  status: e.target.status.value,
-                });
-              }}
-            >
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  defaultValue={selectedUser.name}
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  defaultValue={selectedUser.email}
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300">
-                  Role
-                </label>
-                <input
-                  type="text"
-                  name="role"
-                  defaultValue={selectedUser.role}
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300">
-                  Status
-                </label>
-                <select
-                  name="status"
-                  defaultValue={selectedUser.status}
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-500"
-              >
-                Save Changes
-              </button>
-            </form>
+            <EditUserForm user={selectedUser} onSubmit={handleSubmitUpdate} />
           )}
         </div>
       </Popup>

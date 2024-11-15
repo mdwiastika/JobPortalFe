@@ -22,7 +22,7 @@ export default function Users() {
       </Box>
 
       <Card>
-        <div className="min-h-screen">
+        <div className="h-full">
           <UsersTable />
         </div>
       </Card>

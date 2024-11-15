@@ -1,3 +1,80 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.page-overlay-enter {
+  opacity: 0;
+}
+
+.page-overlay-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in-out;
+}
+
+.page-overlay-exit {
+  opacity: 1;
+}
+
+.page-overlay-exit-active {
+  opacity: 0;
+  transition: opacity 500ms ease-in-out;
+}
+
+.swal-custom-cursor {
+  cursor: auto !important;
+}
+/* CSS untuk pagination */
+/* CSS untuk pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  list-style: none;
+  flex-wrap: wrap;
+}
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page-item {
+  margin: 0 3px; /* Mengurangi margin untuk memperkecil ukuran */
+}
+
+.page-link {
+  display: inline-block;
+  padding: 6px 12px; /* Menyesuaikan padding agar lebih kecil */
+  font-size: 12px; /* Mengecilkan font size */
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  color: #333; /* Mengubah warna teks agar lebih cocok dengan background */
+  background-color: #e0e0e0; /* Menggunakan latar belakang yang lebih gelap */
+  border-radius: 4px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.page-link:hover {
+  background-color: white; /* Warna hover lebih terang */
+  color: #444444;
+}
+
+.active .page-link {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.disabled .page-link {
+  color: #6d6d6d;
+  cursor: not-allowed;
+}
+
+.previous,
+.next {
+  font-weight: 600;
+}
+
+.previous:hover,
+.next:hover {
+  background-color: #4a90e2;
+  color: white;
+}
