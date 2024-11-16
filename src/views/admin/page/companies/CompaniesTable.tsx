@@ -37,7 +37,7 @@ const roles = [
   { id: "job_seeker", name: "Job Seeker" },
 ];
 
-const UsersTable = (): JSX.Element => {
+const CompaniesTable = (): JSX.Element => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
@@ -245,14 +245,14 @@ const UsersTable = (): JSX.Element => {
     <>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Users
+          Companies
         </Typography>
         <Button
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
         >
-          New user
+          New company
         </Button>
       </Box>
 
@@ -265,7 +265,9 @@ const UsersTable = (): JSX.Element => {
             transition={{ delay: 0.2 }}
           >
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-slate-900">Users</h2>
+              <h2 className="text-xl font-semibold text-slate-900">
+                Companies
+              </h2>
               <div className="relative">
                 <input
                   type="text"
@@ -406,4 +408,4 @@ function InputForm(props: { label: string; type: string }) {
   return <Input {...props} variant="bordered" />;
 }
 
-export default UsersTable;
+export default CompaniesTable;

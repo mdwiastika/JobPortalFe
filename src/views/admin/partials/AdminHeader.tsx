@@ -1,13 +1,38 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "../layout/dashboard/DashboardLayout";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
 
 import { varAlpha } from "../../../theme/styles";
+import GetUser from "src/components/GetUser";
 export default function AdminHeader() {
+  const navigate = useNavigate();
+  const [isValidating, setIsValidating] = useState(true);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const user = await GetUser();
+        if (!user) {
+          navigate("/login");
+        } else if (
+          user.roles[0].name !== "admin" &&
+          user.roles[0].name !== "super_admin" &&
+          user.roles[0].name !== "recruiter"
+        ) {
+          navigate("/");
+        } else {
+          setIsValidating(false);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        navigate("/login");
+      }
+    };
+    fetchUsers();
+  }, [navigate]);
   const renderFallback = (
     <Box
       display="flex"
@@ -26,6 +51,9 @@ export default function AdminHeader() {
       />
     </Box>
   );
+  if (isValidating) {
+    return renderFallback;
+  }
   return (
     <DashboardLayout>
       <Suspense fallback={renderFallback}>

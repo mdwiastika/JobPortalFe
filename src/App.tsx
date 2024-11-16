@@ -11,7 +11,7 @@ import AppliedJobs from "./views/profile/AppliedJobs";
 import Dashboard from "./views/admin/page/Dashboard";
 import AdminHeader from "./views/admin/partials/AdminHeader";
 import { ThemeProvider } from "./theme/theme-provider";
-import Companies from "./views/admin/page/Companies";
+import Companies from "./views/admin/page/companies/Companies";
 import Skiils from "./views/admin/page/Skiils";
 import Categories from "./views/admin/page/Categories";
 import JobPosts from "./views/admin/page/JobPosts";

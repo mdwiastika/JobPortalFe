@@ -1,10 +1,10 @@
 import { DashboardContent } from "src/layouts/dashboard";
-import UsersTable from "./UserTable";
+import CompaniesTable from "./CompaniesTable";
 
 export default function Users() {
   return (
     <DashboardContent>
-      <UsersTable />
+      <CompaniesTable />
     </DashboardContent>
   );
 }
