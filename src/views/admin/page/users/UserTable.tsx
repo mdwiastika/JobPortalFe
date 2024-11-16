@@ -12,8 +12,7 @@ import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Input } from "@nextui-org/react";
 import SelectForm from "src/components/SelectFormNext";
 import FormatString from "src/components/FormatString";
-import { Box, Button, Typography } from "@mui/material";
-import { Iconify } from "src/components/iconify";
+import { Box, Typography } from "@mui/material";
 import { Card } from "@mui/material";
 
 interface Role {
@@ -247,13 +246,6 @@ const UsersTable = (): JSX.Element => {
         <Typography variant="h4" flexGrow={1}>
           Users
         </Typography>
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-        >
-          New user
-        </Button>
       </Box>
 
       <Card>
