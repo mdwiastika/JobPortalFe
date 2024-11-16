@@ -48,7 +48,7 @@ export const navData = [
   },
   {
     title: "Logout",
-    path: "/admin/sign-in",
+    path: "/admin/logout",
     icon: icon("ic-logout"),
   },
 ];

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Input } from "@nextui-org/react";
 import axiosInstance from "src/axiosInstance";
+import GetUser from "src/components/GetUser";
 export default function Login() {
   const navigate = useNavigate();
   const [submitMessage, setSubmitMessage] = useState("");
@@ -30,7 +31,16 @@ export default function Login() {
         setSubmitMessage("Login successful! Redirecting to home page...");
         localStorage.setItem("access_token", responseData.data.token);
         resetForm();
-        navigate("/");
+        const user = await GetUser();
+        if (
+          user.roles[0].name == "admin" ||
+          user.roles[0].name == "super_admin" ||
+          user.roles[0].name == "recruiter"
+        ) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
       } else {
         setSubmitMessage("Login failed! Please try again.");
       }

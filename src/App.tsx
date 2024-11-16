@@ -17,6 +17,7 @@ import Categories from "./views/admin/page/Categories";
 import JobPosts from "./views/admin/page/JobPosts";
 import JobApplications from "./views/admin/page/JobApplications";
 import Users from "./views/admin/page/users/Users";
+import LogoutHandler from "./components/LogoutHandler";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
       { path: "categories", element: <Categories /> },
       { path: "posts", element: <JobPosts /> },
       { path: "job-applications", element: <JobApplications /> },
+      { path: "logout", element: <LogoutHandler /> },
     ],
   },
 ]);
