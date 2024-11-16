@@ -4,6 +4,8 @@ import signUpImage from "/sign-up-banner.png";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Input } from "@nextui-org/react";
+import axiosInstance from "src/axiosInstance";
+import GetUser from "src/components/GetUser";
 export default function Signup() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -14,7 +16,7 @@ export default function Signup() {
   const [role, setRole] = useState("");
   const clickRoleHandler = (roleSelected: string) => {
     setRole(roleSelected);
-    if (roleSelected == "job-seeker") {
+    if (roleSelected == "job_seeker") {
       document.getElementById("choice-role")?.classList.add("hidden");
       document.getElementById("role-job-seeker")?.classList.remove("hidden");
       document.getElementById("role-recruiter")?.classList.add("hidden");
@@ -33,7 +35,8 @@ export default function Signup() {
     last_name: string;
     email: string;
     password: string;
-    user_type: string;
+    password_confirmation: string;
+    roles: string;
   }
   const [submitMessage, setSubmitMessage] = useState("");
   const registerHandler = async (
@@ -41,14 +44,36 @@ export default function Signup() {
     { setSubmitting, resetForm }: FormikHelpers<FormValues>
   ) => {
     try {
-      const response = { status: 200, data: values };
-      if (response.status == 200) {
+      const response = await axiosInstance.post("/auth/register/", {
+        full_name: values.first_name + " " + values.last_name,
+        email: values.email,
+        password: values.password,
+        password_confirmation: values.password_confirmation,
+        roles: role,
+      });
+      if (values.password !== values.password_confirmation) {
+        setSubmitMessage("Password and Confirm Password must be the same");
+        return;
+      }
+      const responseData = response.data;
+      if (responseData.status == "success") {
         setSubmitMessage(
-          "Registration successful! Redirecting to login page..."
+          "Registration successful! Redirecting to your page..."
         );
+        localStorage.setItem("access_token", responseData.data.token);
         resetForm();
+        const user = await GetUser();
+        if (
+          user.roles[0].name == "admin" ||
+          user.roles[0].name == "super_admin" ||
+          user.roles[0].name == "recruiter"
+        ) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
       } else {
-        setSubmitMessage("Registration failed! Please try again.");
+        setSubmitMessage(responseData.message);
       }
     } catch (error) {
       setSubmitMessage("Registration failed! Please try again.");
@@ -86,7 +111,8 @@ export default function Signup() {
                 last_name: "",
                 email: "",
                 password: "",
-                user_type: role,
+                password_confirmation: "",
+                roles: role,
               }}
               onSubmit={registerHandler}
             >
@@ -132,6 +158,19 @@ export default function Signup() {
                       required
                     />
                   </div>
+                  <div className="mt-4">
+                    <Field
+                      type="password"
+                      className="block w-full py-2 rounded-md"
+                      name="password_confirmation"
+                      as={InputForm}
+                      label="Password Confirmation"
+                      required
+                    />
+                  </div>
+                  <p className="text-center mt-4 text-sm text-red-500">
+                    {submitMessage && submitMessage}
+                  </p>
                   <button
                     type="submit"
                     className="py-2 px-5 bg-blue-700 text-white mt-4 rounded-md w-full"
@@ -149,9 +188,6 @@ export default function Signup() {
               )}
             </Formik>
           </div>
-          <p className="text-center mt-4 text-sm">
-            {submitMessage && submitMessage}
-          </p>
         </div>
         <div className="lg:w-1/2">
           <span className="text-sm lg:hidden">
@@ -184,7 +220,7 @@ export default function Signup() {
         <div className="flex items-center justify-between gap-2">
           <div className="mt-8">
             <button
-              onClick={() => clickRoleHandler("job-seeker")}
+              onClick={() => clickRoleHandler("job_seeker")}
               className="bg-blue-500 text-white hover:text-blue-500 hover:bg-white hover:border hover:border-blue-500 font-semibold py-1 px-3 lg:py-2 lg:px-4 transition duration-300"
             >
               Sign Up as Job Seeker
