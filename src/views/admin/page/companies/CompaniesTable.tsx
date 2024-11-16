@@ -10,155 +10,210 @@ import EditIcon from "src/components/EditIcon";
 import RemoveIcon from "src/components/RemoveIcon";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Input } from "@nextui-org/react";
-import SelectForm from "src/components/SelectFormNext";
-import FormatString from "src/components/FormatString";
 import { Box, Button, Typography } from "@mui/material";
 import { Iconify } from "src/components/iconify";
 import { Card } from "@mui/material";
+import TextAreaForm from "src/components/TextAreaForm";
 
-interface Role {
-  name: string;
-}
-interface User {
+interface TableData {
   id: number;
-  email: string;
-  full_name: string;
-  roles: Role[];
-  password: string;
+  name: string;
+  logo: string;
+  location: string;
+  industry: string;
+  description: string;
 }
 
-interface EditUserFormProps {
-  user: User;
-  onSubmit: (updatedUser: User) => void;
+interface EditTableDataFormProps {
+  data: TableData;
+  onSubmit: (updatedData: TableData) => void;
 }
-const roles = [
-  { id: "admin", name: "Admin" },
-  { id: "recruiter", name: "Recruiter" },
-  { id: "job_seeker", name: "Job Seeker" },
-];
-
+interface CreateTableDataFormProps {
+  onSubmit: (updatedData: TableData) => void;
+}
+interface CustomChangeEvent extends ChangeEvent<HTMLInputElement> {
+  currentTarget: HTMLInputElement & {
+    files: FileList;
+  };
+}
 const CompaniesTable = (): JSX.Element => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [users, setUsers] = useState<User[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [tableDatas, setTableDatas] = useState<TableData[]>([]);
+  const [filteredTableData, setFilteredTableData] = useState<TableData[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const usersPerPage = 5;
+  const [selectedTableData, setSelectedTableData] = useState<TableData | null>(
+    null
+  );
+  const [isCreatePopupOpen, setIsCreatePopupOpen] = useState<boolean>(false);
+  const handleCreateOpen = () => setIsCreatePopupOpen(true);
+  const handleCreateClose = () => setIsCreatePopupOpen(false);
+  const title = "Companies";
+  const url = "companies";
+  const singleTitle = "Company";
+  const tableDataPerPage = 5;
   const fetchUsers = async (): Promise<void> => {
     try {
-      const response = await axiosInstance.get("/users");
+      const response = await axiosInstance.get(`/${url}`);
       const responseData = response.data;
-      const sampleData: User[] = responseData.data;
-      setUsers(sampleData);
-      setFilteredUsers(sampleData);
+      const sampleData: TableData[] = responseData.data;
+      setTableDatas(sampleData);
+      setFilteredTableData(sampleData);
     } catch (error) {
       console.error("Error fetching users:", error);
       toast.error("Failed to fetch users.");
     }
   };
-  const EditUserForm = ({ user }: EditUserFormProps): JSX.Element => {
-    const [selectedKeyRole, setSelectedKeyRole] = useState(user.roles[0].name);
+  const EditUserForm = ({ data }: EditTableDataFormProps): JSX.Element => {
     const [editMessage, setEditMessage] = useState("");
+    const [logoPreview, setLogoPreview] = useState<File | null>(null);
     const handleEditSubmit = async (
-      values: User,
-      { setSubmitting, resetForm }: FormikHelpers<User>
+      values: TableData,
+      { setSubmitting, resetForm }: FormikHelpers<TableData>
     ) => {
       try {
-        const response = await axiosInstance.put(`/users/${user.id}`, {
-          full_name: values.full_name,
-          email: values.email,
-          roles: selectedKeyRole,
-        });
+        const formData = new FormData();
+        if (logoPreview) {
+          console.log("logoPreview", logoPreview);
+          formData.append("logo", logoPreview);
+        }
+        formData.append("name", values.name);
+        formData.append("location", values.location);
+        formData.append("industry", values.industry);
+        formData.append("description", values.description);
+        const response = await axiosInstance.post(
+          `/${url}/${data.id}?_method=PUT`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         const responseData = response.data;
+        console.log(responseData);
         if (responseData.status == "success") {
           setEditMessage(responseData.message);
           resetForm();
-          setSelectedUser(null);
-          setUsers(
-            users.map((prevUser) =>
-              prevUser.id === values.id
+          setSelectedTableData(null);
+          // Update the table data and logo preview
+          setTableDatas(
+            tableDatas.map((prevData) =>
+              prevData.id === data.id
                 ? {
-                    ...prevUser,
-                    full_name: values.full_name,
-                    email: values.email,
-                    roles: [{ name: selectedKeyRole }],
+                    ...prevData,
+                    logo: responseData.data.logo,
                   }
-                : prevUser
+                : prevData
             )
           );
-          setFilteredUsers(
-            filteredUsers.map((prevUser) =>
-              prevUser.id === values.id
+          setFilteredTableData(
+            filteredTableData.map((prevData) =>
+              prevData.id === data.id
                 ? {
-                    ...user,
-                    full_name: values.full_name,
-                    email: values.email,
-                    roles: [{ name: selectedKeyRole }],
+                    ...prevData,
+                    logo: responseData.data.logo,
                   }
-                : prevUser
+                : prevData
             )
           );
+          setLogoPreview(null);
         } else {
           setEditMessage(responseData.message);
         }
       } catch (error) {
-        setEditMessage("User update failed! Please try again.");
+        setEditMessage(`${singleTitle} update failed! Please try again.`);
         console.log(error);
       }
       setSubmitting(false);
     };
-
+    const logoHandler = (e: CustomChangeEvent): void => {
+      const file = e.currentTarget.files[0];
+      if (!file) return;
+      const previewUrl = URL.createObjectURL(file);
+      setLogoPreview(file);
+      document.getElementById("logo")!.setAttribute("src", previewUrl);
+    };
     return (
       <Formik
         initialValues={{
-          id: user.id,
-          full_name: user.full_name,
-          email: user.email,
-          roles: [{ name: user.roles[0].name }],
-          password: "",
+          id: data.id,
+          name: data.name,
+          logo: "",
+          location: data.location,
+          industry: data.industry,
+          description: data.description,
         }}
         onSubmit={handleEditSubmit}
       >
         {({ isSubmitting }) => (
           <Form className="space-y-4 bg-white text-gray-800">
-            {/* Name Field */}
             <div className="mb-4">
               <Field
                 type="text"
                 label="Name"
                 as={InputForm}
-                name="full_name"
+                name="name"
                 className="mt-1 block w-full py-2 "
               />
             </div>
             <div className="mb-4">
+              <div className="border-2 border-gray-300 rounded-xl py-2 px-2">
+                <label htmlFor="logo" className="text-xs">
+                  Logo
+                </label>
+                <Field
+                  label="Logo"
+                  type="file"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    if (e.currentTarget.files && e.currentTarget.files[0]) {
+                      logoHandler(e as CustomChangeEvent);
+                    }
+                  }}
+                  name="logo"
+                  className="mt-1 block w-full text-gray-700 text-sm
+                 file:mr-4 file:py-0 file:px-4
+                 file:rounded-md file:border-0
+                 file:text-sm file:font-semibold
+                 file:bg-blue-50 file:text-gray-700
+                 hover:file:bg-blue-100"
+                />
+              </div>
+              <img
+                src={
+                  data.logo.includes("http")
+                    ? data.logo
+                    : `${import.meta.env.VITE_BE_URL}/storage/${data.logo}`
+                }
+                id="logo"
+                className="w-12 h-full object-contain mx-2 mt-2"
+                alt=""
+              />
+            </div>
+            <div className="mb-4">
               <Field
-                type="email"
-                label="Email"
+                type="text"
+                label="Location"
                 as={InputForm}
-                name="email"
+                name="location"
                 className="mt-1 block w-full py-2 text-gray-700"
               />
             </div>
             <div className="mb-4">
               <Field
-                type="password"
-                label="Isi password jika ingin mengganti"
+                type="text"
+                label="Industry"
                 as={InputForm}
-                name="password"
+                name="industry"
                 className="mt-1 block w-full py-2 text-gray-700"
               />
             </div>
             <div className="mb-4">
               <Field
-                as={SelectForm}
-                items={roles}
-                selectedKey={selectedKeyRole}
-                onSelectionChange={setSelectedKeyRole}
-                label="Role"
-                name="roles"
-                className="mt-1 block w-full py-2 "
-              ></Field>
+                label="Description"
+                as={TextAreaForm}
+                name="description"
+                className="mt-1 block w-full py-2 text-gray-700"
+              />
             </div>
             <div className="text-center text-green-500">{editMessage}</div>
             <button
@@ -173,6 +228,144 @@ const CompaniesTable = (): JSX.Element => {
       </Formik>
     );
   };
+  const CreateUserForm = ({
+    onSubmit,
+  }: CreateTableDataFormProps): JSX.Element => {
+    const [logoPreview, setLogoPreview] = useState<File | null>(null);
+    const [createMessage, setCreateMessage] = useState("");
+    const handleCreateSubmit = async (
+      values: TableData,
+      { setSubmitting, resetForm }: FormikHelpers<TableData>
+    ) => {
+      try {
+        const formData = new FormData();
+        if (logoPreview) {
+          formData.append("logo", logoPreview);
+        }
+        formData.append("name", values.name);
+        formData.append("location", values.location);
+        formData.append("industry", values.industry);
+        formData.append("description", values.description);
+        const response = await axiosInstance.post(`/${url}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        const responseData = response.data;
+        if (responseData.status === "success") {
+          Swal.fire("Success!", responseData.message, "success");
+          onSubmit(responseData.data);
+          resetForm();
+        } else {
+          setCreateMessage(responseData.message);
+        }
+      } catch (error) {
+        setCreateMessage(`${singleTitle} creation failed! Please try again.`);
+        console.log(error);
+      }
+      setSubmitting(false);
+    };
+
+    const logoHandler = (e: ChangeEvent<HTMLInputElement>): void => {
+      const file = e.currentTarget.files ? e.currentTarget.files[0] : null;
+      if (!file) return;
+      const previewUrl = URL.createObjectURL(file);
+      setLogoPreview(file);
+      document.getElementById("logo")!.setAttribute("src", previewUrl);
+    };
+
+    return (
+      <Formik
+        initialValues={{
+          id: 0,
+          name: "",
+          logo: "",
+          location: "",
+          industry: "",
+          description: "",
+        }}
+        onSubmit={handleCreateSubmit}
+      >
+        {({ isSubmitting }) => (
+          <Form className="space-y-4 bg-white text-gray-800">
+            <div className="mb-4">
+              <Field
+                type="text"
+                label="Name"
+                as={InputForm}
+                name="name"
+                className="mt-1 block w-full py-2 "
+              />
+            </div>
+            <div className="mb-4">
+              <div className="border-2 border-gray-300 rounded-xl py-2 px-2">
+                <label htmlFor="logo" className="text-xs">
+                  Logo
+                </label>
+                <Field
+                  label="Logo"
+                  type="file"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    if (e.currentTarget.files && e.currentTarget.files[0]) {
+                      logoHandler(e as CustomChangeEvent);
+                    }
+                  }}
+                  name="logo"
+                  className="mt-1 block w-full text-gray-700 text-sm
+                 file:mr-4 file:py-0 file:px-4
+                 file:rounded-md file:border-0
+                 file:text-sm file:font-semibold
+                 file:bg-blue-50 file:text-gray-700
+                 hover:file:bg-blue-100"
+                />
+              </div>
+              <img
+                id="logo"
+                className="w-12 h-full object-contain mx-2 mt-2"
+                alt=""
+              />
+            </div>
+            <div className="mb-4">
+              <Field
+                type="text"
+                label="Location"
+                as={InputForm}
+                name="location"
+                className="mt-1 block w-full py-2 text-gray-700"
+              />
+            </div>
+            <div className="mb-4">
+              <Field
+                type="text"
+                label="Industry"
+                as={InputForm}
+                name="industry"
+                className="mt-1 block w-full py-2 text-gray-700"
+              />
+            </div>
+            <div className="mb-4">
+              <Field
+                label="Description"
+                as={TextAreaForm}
+                name="description"
+                className="mt-1 block w-full py-2 text-gray-700"
+              />
+            </div>
+            {createMessage && (
+              <div className="text-center text-red-500">{createMessage}</div>
+            )}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-indigo-600 text-white py-2 px-4 rounded"
+            >
+              Create Company
+            </button>
+          </Form>
+        )}
+      </Formik>
+    );
+  };
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -181,15 +374,13 @@ const CompaniesTable = (): JSX.Element => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
 
-    const filtered = users.filter(
-      (user) =>
-        user.full_name.toLowerCase().includes(term) ||
-        user.email.toLowerCase().includes(term)
+    const filtered = tableDatas.filter((data) =>
+      data.name.toLowerCase().includes(term)
     );
-    setFilteredUsers(filtered);
+    setFilteredTableData(filtered);
   };
 
-  const handleDelete = async (userId: number): Promise<void> => {
+  const handleDelete = async (dataId: number): Promise<void> => {
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -204,10 +395,12 @@ const CompaniesTable = (): JSX.Element => {
     });
 
     if (result.isConfirmed) {
-      const response = await axiosInstance.delete(`/users/${userId}`);
+      const response = await axiosInstance.delete(`/${url}/${dataId}`);
       const responseData = response.data;
-      setUsers(users.filter((user) => user.id !== userId));
-      setFilteredUsers(filteredUsers.filter((user) => user.id !== userId));
+      setTableDatas(tableDatas.filter((data) => data.id !== dataId));
+      setFilteredTableData(
+        filteredTableData.filter((data) => data.id !== dataId)
+      );
       if (responseData.status === "success") {
         Swal.fire("Deleted!", responseData.message, "success");
       } else {
@@ -216,26 +409,31 @@ const CompaniesTable = (): JSX.Element => {
     }
   };
 
-  const handleUpdate = (user: User): void => {
-    setSelectedUser(user);
+  const handleUpdate = (data: TableData): void => {
+    setSelectedTableData(data);
   };
 
-  const handleSubmitUpdate = (updatedUser: User): void => {
-    setUsers(
-      users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-    );
-    setFilteredUsers(
-      filteredUsers.map((user) =>
-        user.id === updatedUser.id ? updatedUser : user
+  const handleSubmitUpdate = (updatedData: TableData): void => {
+    setTableDatas(
+      tableDatas.map((data) =>
+        data.id === updatedData.id ? updatedData : data
       )
     );
-    setSelectedUser(null);
+    setFilteredTableData(
+      filteredTableData.map((data) =>
+        data.id === updatedData.id ? updatedData : data
+      )
+    );
+    setSelectedTableData(null);
     toast.success("User updated successfully");
   };
 
-  const indexOfLastUser = (currentPage + 1) * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const indexOfLastTableData = (currentPage + 1) * tableDataPerPage;
+  const indexOfFirstTableData = indexOfLastTableData - tableDataPerPage;
+  const currentTableData = filteredTableData.slice(
+    indexOfFirstTableData,
+    indexOfLastTableData
+  );
 
   const handlePageChange = ({ selected }: { selected: number }): void => {
     setCurrentPage(selected);
@@ -245,14 +443,15 @@ const CompaniesTable = (): JSX.Element => {
     <>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Companies
+          {title}
         </Typography>
         <Button
           variant="contained"
           color="inherit"
+          onClick={handleCreateOpen}
           startIcon={<Iconify icon="mingcute:add-line" />}
         >
-          New company
+          New {singleTitle}
         </Button>
       </Box>
 
@@ -265,13 +464,11 @@ const CompaniesTable = (): JSX.Element => {
             transition={{ delay: 0.2 }}
           >
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-slate-900">
-                Companies
-              </h2>
+              <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search users..."
+                  placeholder={`Search ${singleTitle}...`}
                   className="bg-gray-100 text-gray-800 placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={searchTerm}
                   onChange={handleSearch}
@@ -291,10 +488,13 @@ const CompaniesTable = (): JSX.Element => {
                       Name
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                      Email
+                      Logo
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                      Role
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                      Industry
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Actions
@@ -303,10 +503,10 @@ const CompaniesTable = (): JSX.Element => {
                 </thead>
 
                 <tbody className="divide-y divide-gray-700">
-                  {currentUsers.length > 0 ? (
-                    currentUsers.map((user) => (
+                  {currentTableData.length > 0 ? (
+                    currentTableData.map((data) => (
                       <motion.tr
-                        key={user.id}
+                        key={data.id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3 }}
@@ -315,35 +515,50 @@ const CompaniesTable = (): JSX.Element => {
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10">
                               <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                                {user.full_name.charAt(0)}
+                                {data.name.charAt(0)}
                               </div>
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">
-                                {user.full_name}
+                                {data.name}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {user.email}
+                            <img
+                              src={
+                                data.logo.includes("http")
+                                  ? data.logo
+                                  : `${import.meta.env.VITE_BE_URL}/storage/${
+                                      data.logo
+                                    }`
+                              }
+                              alt=""
+                              className="w-16 h-auto object-contain"
+                            />
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
-                            {FormatString(user.roles[0].name)}
+                          <span className="text-sm text-gray-900">
+                            {data.location}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm text-gray-900">
+                            {data.industry}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           <button
-                            onClick={() => handleUpdate(user)}
+                            onClick={() => handleUpdate(data)}
                             className="text-indigo-400 hover:text-indigo-600 mr-3"
                           >
                             <EditIcon />
                           </button>
                           <button
-                            onClick={() => handleDelete(user.id)}
+                            onClick={() => handleDelete(data.id)}
                             className="text-red-400 hover:text-red-600"
                           >
                             <RemoveIcon />
@@ -369,7 +584,9 @@ const CompaniesTable = (): JSX.Element => {
               <ReactPaginate
                 previousLabel={"Previous"}
                 nextLabel={"Next"}
-                pageCount={Math.ceil(filteredUsers.length / usersPerPage)}
+                pageCount={Math.ceil(
+                  filteredTableData.length / tableDataPerPage
+                )}
                 onPageChange={handlePageChange}
                 containerClassName={"pagination"}
                 pageClassName={"page-item"}
@@ -384,18 +601,39 @@ const CompaniesTable = (): JSX.Element => {
             </div>
 
             <Popup
-              open={selectedUser !== null}
+              open={selectedTableData !== null}
               closeOnDocumentClick
-              onClose={() => setSelectedUser(null)}
+              onClose={() => setSelectedTableData(null)}
             >
               <div className="text-gray-800 bg-white p-6 rounded-lg shadow-lg w-96">
-                <h2 className="text-xl font-semibold mb-4">Edit User</h2>
-                {selectedUser && (
+                <h2 className="text-xl font-semibold mb-4">
+                  Edit {singleTitle}
+                </h2>
+                {selectedTableData && (
                   <EditUserForm
-                    user={selectedUser}
+                    data={selectedTableData}
                     onSubmit={handleSubmitUpdate}
                   />
                 )}
+              </div>
+            </Popup>
+            <Popup
+              open={isCreatePopupOpen}
+              closeOnDocumentClick
+              onClose={handleCreateClose}
+              modal
+            >
+              <div className="text-gray-800 bg-white p-6 rounded-lg shadow-lg w-96">
+                <h2 className="text-xl font-semibold mb-4">
+                  Create {singleTitle}
+                </h2>
+                <CreateUserForm
+                  onSubmit={(newData) => {
+                    setTableDatas([...tableDatas, newData]);
+                    setFilteredTableData([...filteredTableData, newData]);
+                    handleCreateClose();
+                  }}
+                />
               </div>
             </Popup>
           </motion.div>
