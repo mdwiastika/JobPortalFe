@@ -1,31 +1,41 @@
 import { Field, Form, Formik, FormikHelpers } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import signUpImage from "/sign-up-banner.png";
 import { useEffect, useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Input } from "@nextui-org/react";
+import axiosInstance from "src/axiosInstance";
 export default function Login() {
+  const navigate = useNavigate();
   const [submitMessage, setSubmitMessage] = useState("");
   interface FormValues {
     email: string;
     password: string;
   }
+  useEffect(() => {
+    if (localStorage.getItem("access_token")) {
+      navigate("/");
+    }
+  }, [navigate]);
+  console.log(localStorage.getItem("access_token"));
   const loginHandler = async (
     values: FormValues,
     { setSubmitting, resetForm }: FormikHelpers<FormValues>
   ) => {
     try {
-      const response = { status: 200, data: values };
-      if (response.status == 200) {
-        setSubmitMessage(
-          "Registration successful! Redirecting to login page..."
-        );
+      const response = await axiosInstance.post("/auth/login", values);
+      console.log("masuk", values);
+      const responseData = response.data;
+      if (responseData.status == "success") {
+        setSubmitMessage("Login successful! Redirecting to home page...");
+        localStorage.setItem("access_token", responseData.data.token);
         resetForm();
+        navigate("/");
       } else {
-        setSubmitMessage("Registration failed! Please try again.");
+        setSubmitMessage("Login failed! Please try again.");
       }
     } catch (error) {
-      setSubmitMessage("Registration failed! Please try again.");
+      setSubmitMessage("Login failed! Please try again.");
       console.log(error);
     }
     setSubmitting(false);
@@ -83,6 +93,9 @@ export default function Login() {
                       Forgot Password?
                     </Link>
                   </div>
+                  <p className="text-center mt-4 text-sm text-red-500">
+                    {submitMessage}
+                  </p>
                   <button
                     type="submit"
                     className="py-2 px-5 bg-blue-700 text-white mt-4 rounded-md w-full"
@@ -100,9 +113,6 @@ export default function Login() {
               )}
             </Formik>
           </div>
-          <p className="text-center mt-4 text-sm">
-            {submitMessage && submitMessage}
-          </p>
         </div>
         <div className="lg:w-1/3">
           <img src={signUpImage} alt="" className="mt-4 h-full" />

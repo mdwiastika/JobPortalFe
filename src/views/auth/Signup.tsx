@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import signUpImage from "/sign-up-banner.png";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Input } from "@nextui-org/react";
 export default function Signup() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("access_token")) {
+      navigate("/");
+    }
+  }, [navigate]);
   const [role, setRole] = useState("");
   const clickRoleHandler = (roleSelected: string) => {
     setRole(roleSelected);
