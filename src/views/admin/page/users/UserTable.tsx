@@ -1,107 +1,38 @@
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { motion } from "framer-motion";
-import { Search, Edit, Trash } from "lucide-react";
+import { Search } from "lucide-react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Popup from "reactjs-popup";
 import ReactPaginate from "react-paginate";
+import axiosInstance from "src/axiosInstance";
+import EditIcon from "src/components/EditIcon";
+import RemoveIcon from "src/components/RemoveIcon";
+import { Field, Form, Formik, FormikHelpers } from "formik";
+import { Input } from "@nextui-org/react";
+import SelectForm from "src/components/SelectFormNext";
+import FormatString from "src/components/FormatString";
 
-// Define interfaces
+interface Role {
+  name: string;
+}
 interface User {
   id: number;
   email: string;
-  name: string;
-  status: UserStatus;
-  role: string;
+  full_name: string;
+  roles: Role[];
+  password: string;
 }
 
-// Using literal types for better type safety
-type UserStatus = "Active" | "Inactive";
-
-// Props for form components
 interface EditUserFormProps {
   user: User;
   onSubmit: (updatedUser: User) => void;
 }
-
-// Sample data interface
-interface UserData {
-  id: number;
-  email: string;
-  name: string;
-  role: string;
-}
-
-const EditUserForm = ({ user, onSubmit }: EditUserFormProps): JSX.Element => {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
-    const updatedUser: User = {
-      ...user,
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      role: formData.get("role") as string,
-      status: formData.get("status") as UserStatus,
-    };
-
-    onSubmit(updatedUser);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300">Name</label>
-        <input
-          type="text"
-          name="name"
-          defaultValue={user.name}
-          className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300">Email</label>
-        <input
-          type="email"
-          name="email"
-          defaultValue={user.email}
-          className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300">Role</label>
-        <select
-          name="role"
-          defaultValue={user.role}
-          className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="Student">Student</option>
-          <option value="Teacher">Teacher</option>
-          <option value="Admin">Admin</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300">
-          Status
-        </label>
-        <select
-          name="status"
-          defaultValue={user.status}
-          className="mt-1 block w-full px-3 py-2 bg-gray-700 text-gray-100 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
-      </div>
-      <button
-        type="submit"
-        className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-500"
-      >
-        Save Changes
-      </button>
-    </form>
-  );
-};
+const roles = [
+  { id: "admin", name: "Admin" },
+  { id: "recruiter", name: "Recruiter" },
+  { id: "job_seeker", name: "Job Seeker" },
+];
 
 const UsersTable = (): JSX.Element => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -110,87 +41,135 @@ const UsersTable = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const usersPerPage = 5;
-
   const fetchUsers = async (): Promise<void> => {
     try {
-      const sampleData: UserData[] = [
-        {
-          id: 1,
-          email: "john.doe@example.com",
-          name: "John Doe",
-          role: "Student",
-        },
-        {
-          id: 2,
-          email: "jane.smith@example.com",
-          name: "Jane Smith",
-          role: "Teacher",
-        },
-        {
-          id: 3,
-          email: "michael.jones@example.com",
-          name: "Michael Jones",
-          role: "Admin",
-        },
-        {
-          id: 4,
-          email: "emily.davis@example.com",
-          name: "Emily Davis",
-          role: "Student",
-        },
-        {
-          id: 5,
-          email: "william.brown@example.com",
-          name: "William Brown",
-          role: "Teacher",
-        },
-        {
-          id: 6,
-          email: "olivia.wilson@example.com",
-          name: "Olivia Wilson",
-          role: "Student",
-        },
-        {
-          id: 7,
-          email: "james.moore@example.com",
-          name: "James Moore",
-          role: "Admin",
-        },
-        {
-          id: 8,
-          email: "isabella.taylor@example.com",
-          name: "Isabella Taylor",
-          role: "Teacher",
-        },
-        {
-          id: 9,
-          email: "ethan.anderson@example.com",
-          name: "Ethan Anderson",
-          role: "Student",
-        },
-        {
-          id: 10,
-          email: "mia.thomas@example.com",
-          name: "Mia Thomas",
-          role: "Admin",
-        },
-      ];
-
-      const usersWithRoles: User[] = sampleData
-        .filter((user) => user.email !== "superadmin@gmail.com")
-        .map((user) => ({
-          ...user,
-          status: Math.random() > 0.5 ? "Active" : "Inactive",
-        }));
-
-      setUsers(usersWithRoles);
-      setFilteredUsers(usersWithRoles);
+      const response = await axiosInstance.get("/users");
+      const responseData = response.data;
+      const sampleData: User[] = responseData.data;
+      setUsers(sampleData);
+      setFilteredUsers(sampleData);
     } catch (error) {
       console.error("Error fetching users:", error);
       toast.error("Failed to fetch users.");
     }
   };
+  const EditUserForm = ({ user }: EditUserFormProps): JSX.Element => {
+    const [selectedKeyRole, setSelectedKeyRole] = useState(user.roles[0].name);
+    const [editMessage, setEditMessage] = useState("");
+    const handleEditSubmit = async (
+      values: User,
+      { setSubmitting, resetForm }: FormikHelpers<User>
+    ) => {
+      try {
+        const response = await axiosInstance.put(`/users/${user.id}`, {
+          full_name: values.full_name,
+          email: values.email,
+          roles: selectedKeyRole,
+        });
+        const responseData = response.data;
+        if (responseData.status == "success") {
+          setEditMessage(responseData.message);
+          resetForm();
+          setSelectedUser(null);
+          setUsers(
+            users.map((prevUser) =>
+              prevUser.id === values.id
+                ? {
+                    ...prevUser,
+                    full_name: values.full_name,
+                    email: values.email,
+                    roles: [{ name: selectedKeyRole }],
+                  }
+                : prevUser
+            )
+          );
+          setFilteredUsers(
+            filteredUsers.map((prevUser) =>
+              prevUser.id === values.id
+                ? {
+                    ...user,
+                    full_name: values.full_name,
+                    email: values.email,
+                    roles: [{ name: selectedKeyRole }],
+                  }
+                : prevUser
+            )
+          );
+        } else {
+          setEditMessage(responseData.message);
+        }
+      } catch (error) {
+        setEditMessage("User update failed! Please try again.");
+        console.log(error);
+      }
+      setSubmitting(false);
+    };
 
+    return (
+      <Formik
+        initialValues={{
+          id: user.id,
+          full_name: user.full_name,
+          email: user.email,
+          roles: [{ name: user.roles[0].name }],
+          password: "",
+        }}
+        onSubmit={handleEditSubmit}
+      >
+        {({ isSubmitting }) => (
+          <Form className="space-y-4 bg-white text-gray-800">
+            {/* Name Field */}
+            <div className="mb-4">
+              <Field
+                type="text"
+                label="Name"
+                as={InputForm}
+                name="full_name"
+                className="mt-1 block w-full py-2 "
+              />
+            </div>
+            <div className="mb-4">
+              <Field
+                type="email"
+                label="Email"
+                as={InputForm}
+                name="email"
+                className="mt-1 block w-full py-2 text-gray-700"
+              />
+            </div>
+            <div className="mb-4">
+              <Field
+                type="password"
+                label="Isi password jika ingin mengganti"
+                as={InputForm}
+                name="password"
+                className="mt-1 block w-full py-2 text-gray-700"
+              />
+            </div>
+            <div className="mb-4">
+              <Field
+                as={SelectForm}
+                items={roles}
+                selectedKey={selectedKeyRole}
+                onSelectionChange={setSelectedKeyRole}
+                label="Role"
+                name="roles"
+                className="mt-1 block w-full py-2 "
+              ></Field>
+            </div>
+            <div className="text-center text-green-500">{editMessage}</div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-500"
+            >
+              Save Changes
+            </button>
+          </Form>
+        )}
+      </Formik>
+    );
+  };
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -201,7 +180,7 @@ const UsersTable = (): JSX.Element => {
 
     const filtered = users.filter(
       (user) =>
-        user.name.toLowerCase().includes(term) ||
+        user.full_name.toLowerCase().includes(term) ||
         user.email.toLowerCase().includes(term)
     );
     setFilteredUsers(filtered);
@@ -222,9 +201,15 @@ const UsersTable = (): JSX.Element => {
     });
 
     if (result.isConfirmed) {
+      const response = await axiosInstance.delete(`/users/${userId}`);
+      const responseData = response.data;
       setUsers(users.filter((user) => user.id !== userId));
       setFilteredUsers(filteredUsers.filter((user) => user.id !== userId));
-      toast.success("User deleted successfully");
+      if (responseData.status === "success") {
+        Swal.fire("Deleted!", responseData.message, "success");
+      } else {
+        Swal.fire("Failed!", responseData.message, "error");
+      }
     }
   };
 
@@ -251,12 +236,6 @@ const UsersTable = (): JSX.Element => {
 
   const handlePageChange = ({ selected }: { selected: number }): void => {
     setCurrentPage(selected);
-  };
-
-  const getStatusClassName = (status: UserStatus): string => {
-    return status === "Active"
-      ? "bg-green-800 text-green-100"
-      : "bg-red-800 text-red-100";
   };
 
   return (
@@ -294,9 +273,6 @@ const UsersTable = (): JSX.Element => {
                 Role
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -315,12 +291,12 @@ const UsersTable = (): JSX.Element => {
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                          {user.name.charAt(0)}
+                          {user.full_name.charAt(0)}
                         </div>
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {user.name}
+                          {user.full_name}
                         </div>
                       </div>
                     </div>
@@ -330,16 +306,7 @@ const UsersTable = (): JSX.Element => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClassName(
-                        user.status
-                      )}`}
-                    >
-                      {user.status}
+                      {FormatString(user.roles[0].name)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
@@ -347,13 +314,13 @@ const UsersTable = (): JSX.Element => {
                       onClick={() => handleUpdate(user)}
                       className="text-indigo-400 hover:text-indigo-600 mr-3"
                     >
-                      <Edit size={18} />
+                      <EditIcon />
                     </button>
                     <button
                       onClick={() => handleDelete(user.id)}
                       className="text-red-400 hover:text-red-600"
                     >
-                      <Trash size={18} />
+                      <RemoveIcon />
                     </button>
                   </td>
                 </motion.tr>
@@ -395,8 +362,8 @@ const UsersTable = (): JSX.Element => {
         closeOnDocumentClick
         onClose={() => setSelectedUser(null)}
       >
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-          <h2 className="text-xl text-white font-semibold mb-4">Edit User</h2>
+        <div className="text-gray-800 bg-white p-6 rounded-lg shadow-lg w-96">
+          <h2 className="text-xl font-semibold mb-4">Edit User</h2>
           {selectedUser && (
             <EditUserForm user={selectedUser} onSubmit={handleSubmitUpdate} />
           )}
@@ -405,5 +372,8 @@ const UsersTable = (): JSX.Element => {
     </motion.div>
   );
 };
+function InputForm(props: { label: string; type: string }) {
+  return <Input {...props} variant="bordered" />;
+}
 
 export default UsersTable;
