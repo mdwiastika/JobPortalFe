@@ -16,6 +16,7 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 import Footer from "./Footer";
 import HugeiconsDisability from "../../components/DisabilityLogo";
 import NormalPeople from "../../components/NormalLogo";
+import axiosInstance from "src/axiosInstance";
 const menuItems = [
   {
     name: "Home",
@@ -36,6 +37,7 @@ const menuItems = [
 ];
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [nameMenu, setNameMenu] = useState("Home");
   const location = useLocation();
   const [isDisability, setIsDisability] = useState(
@@ -53,7 +55,20 @@ export default function App() {
     if (item) {
       setNameMenu(item.name);
     }
+    if (localStorage.getItem("access_token")) {
+      setIsAuthenticated(true);
+    }
   }, [location.pathname]);
+  const logoutHandler = async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    } finally {
+        localStorage.removeItem("access_token");
+        setIsAuthenticated(false);
+      }
+  };
   return (
     <main className="font-montserrat">
       <HelmetProvider>
@@ -114,19 +129,32 @@ export default function App() {
           </NavbarItem>
         </NavbarContent>
         <NavbarContent justify="end">
-          <NavbarItem className="hidden lg:flex">
-            <Link to="/login" className="text-sm text-blue-700 font-medium">
-              Login
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link
-              to="/signup"
-              className="text-sm font-medium bg-blue-700 text-white py-2 px-4 rounded-lg"
-            >
-              Sign Up
-            </Link>
-          </NavbarItem>
+          {!isAuthenticated ? (
+            <>
+              <NavbarItem className="hidden lg:flex">
+                <Link to="/login" className="text-sm text-blue-700 font-medium">
+                  Login
+                </Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link
+                  to="/signup"
+                  className="text-sm font-medium bg-blue-700 text-white py-2 px-4 rounded-full"
+                >
+                  Sign Up
+                </Link>
+              </NavbarItem>
+            </>
+          ) : (
+            <NavbarItem className="hidden lg:flex">
+              <button
+                onClick={logoutHandler}
+                className="text-sm bg-blue-700 text-white py-2 px-4 rounded-full font-medium"
+              >
+                Logout
+              </button>
+            </NavbarItem>
+          )}
         </NavbarContent>
         <NavbarMenu>
           {menuItems.map((item, index) => (
