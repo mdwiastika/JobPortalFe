@@ -13,7 +13,7 @@ import AdminHeader from "./views/admin/partials/AdminHeader";
 import { ThemeProvider } from "./theme/theme-provider";
 import Companies from "./views/admin/page/companies/Companies";
 import Skiils from "./views/admin/page/skills/Skiils";
-import Categories from "./views/admin/page/Categories";
+import Categories from "./views/admin/page/job-categories/Categories";
 import JobPosts from "./views/admin/page/JobPosts";
 import JobApplications from "./views/admin/page/JobApplications";
 import Users from "./views/admin/page/users/Users";
