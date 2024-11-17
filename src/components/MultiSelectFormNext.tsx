@@ -5,7 +5,7 @@ interface SelectFormProps<T> {
   label: string;
   placeholder?: string;
   className?: string;
-  selectedKey?: string;
+  selectedKeys?: string;
   onSelectionChange: (key: string) => void;
   selectionMode?: "single" | "multiple";
 }
@@ -13,11 +13,11 @@ type SelectItemType = {
   id: string;
   name: string;
 };
-export default function SelectForm<T extends SelectItemType>({
+export default function MultiSelectForm<T extends SelectItemType>({
   items,
   label,
   placeholder,
-  selectedKey,
+  selectedKeys,
   onSelectionChange,
   className,
   selectionMode,
@@ -25,9 +25,9 @@ export default function SelectForm<T extends SelectItemType>({
   return (
     <Select
       label={label}
-      defaultSelectedKeys={[selectedKey || ""]}
+      defaultSelectedKeys={selectedKeys || [""]}
       onChange={(e) => onSelectionChange(e.target.value)}
-      selectedKeys={[selectedKey || ""]}
+      selectedKeys={selectedKeys || ""}
       placeholder={placeholder}
       className={className}
       selectionMode={selectionMode}
