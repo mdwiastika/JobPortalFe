@@ -13,15 +13,10 @@ import { Input } from "@nextui-org/react";
 import { Box, Button, Typography } from "@mui/material";
 import { Iconify } from "src/components/iconify";
 import { Card } from "@mui/material";
-import TextAreaForm from "src/components/TextAreaForm";
 
 interface TableData {
   id: number;
-  name: string;
-  logo: string;
-  location: string;
-  industry: string;
-  description: string;
+  skill_name: string;
 }
 
 interface EditTableDataFormProps {
@@ -31,12 +26,7 @@ interface EditTableDataFormProps {
 interface CreateTableDataFormProps {
   onSubmit: (updatedData: TableData) => void;
 }
-interface CustomChangeEvent extends ChangeEvent<HTMLInputElement> {
-  currentTarget: HTMLInputElement & {
-    files: FileList;
-  };
-}
-const CompaniesTable = (): JSX.Element => {
+const SkillsTable = (): JSX.Element => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [tableDatas, setTableDatas] = useState<TableData[]>([]);
   const [filteredTableData, setFilteredTableData] = useState<TableData[]>([]);
@@ -47,9 +37,9 @@ const CompaniesTable = (): JSX.Element => {
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState<boolean>(false);
   const handleCreateOpen = () => setIsCreatePopupOpen(true);
   const handleCreateClose = () => setIsCreatePopupOpen(false);
-  const title = "Companies";
-  const url = "companies";
-  const singleTitle = "Company";
+  const title = "Skills";
+  const url = "skills";
+  const singleTitle = "Skill";
   const tableDataPerPage = 5;
   const fetchDatas = async (): Promise<void> => {
     try {
@@ -65,21 +55,13 @@ const CompaniesTable = (): JSX.Element => {
   };
   const EditDataForm = ({ data }: EditTableDataFormProps): JSX.Element => {
     const [editMessage, setEditMessage] = useState("");
-    const [logoPreview, setLogoPreview] = useState<File | null>(null);
     const handleEditSubmit = async (
       values: TableData,
       { setSubmitting, resetForm }: FormikHelpers<TableData>
     ) => {
       try {
         const formData = new FormData();
-        if (logoPreview) {
-          console.log("logoPreview", logoPreview);
-          formData.append("logo", logoPreview);
-        }
-        formData.append("name", values.name);
-        formData.append("location", values.location);
-        formData.append("industry", values.industry);
-        formData.append("description", values.description);
+        formData.append("skill_name", values.skill_name);
         const response = await axiosInstance.post(
           `/${url}/${data.id}?_method=PUT`,
           formData,
@@ -101,7 +83,7 @@ const CompaniesTable = (): JSX.Element => {
               prevData.id === data.id
                 ? {
                     ...prevData,
-                    logo: responseData.data.logo,
+                    skill_name: responseData.data.skill_name,
                   }
                 : prevData
             )
@@ -111,12 +93,11 @@ const CompaniesTable = (): JSX.Element => {
               prevData.id === data.id
                 ? {
                     ...prevData,
-                    logo: responseData.data.logo,
+                    skill_name: responseData.data.skill_name,
                   }
                 : prevData
             )
           );
-          setLogoPreview(null);
         } else {
           setEditMessage(responseData.message);
         }
@@ -126,22 +107,11 @@ const CompaniesTable = (): JSX.Element => {
       }
       setSubmitting(false);
     };
-    const logoHandler = (e: CustomChangeEvent): void => {
-      const file = e.currentTarget.files[0];
-      if (!file) return;
-      const previewUrl = URL.createObjectURL(file);
-      setLogoPreview(file);
-      document.getElementById("logo")!.setAttribute("src", previewUrl);
-    };
     return (
       <Formik
         initialValues={{
           id: data.id,
-          name: data.name,
-          logo: "",
-          location: data.location,
-          industry: data.industry,
-          description: data.description,
+          skill_name: data.skill_name,
         }}
         onSubmit={handleEditSubmit}
       >
@@ -150,69 +120,10 @@ const CompaniesTable = (): JSX.Element => {
             <div className="mb-4">
               <Field
                 type="text"
-                label="Name"
+                label="Skill Name"
                 as={InputForm}
-                name="name"
+                name="skill_name"
                 className="mt-1 block w-full py-2 "
-              />
-            </div>
-            <div className="mb-4">
-              <div className="border-2 border-gray-300 rounded-xl py-2 px-2">
-                <label htmlFor="logo" className="text-xs">
-                  Logo
-                </label>
-                <Field
-                  label="Logo"
-                  type="file"
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (e.currentTarget.files && e.currentTarget.files[0]) {
-                      logoHandler(e as CustomChangeEvent);
-                    }
-                  }}
-                  name="logo"
-                  className="mt-1 block w-full text-gray-700 text-sm
-                 file:mr-4 file:py-0 file:px-4
-                 file:rounded-md file:border-0
-                 file:text-sm file:font-semibold
-                 file:bg-blue-50 file:text-gray-700
-                 hover:file:bg-blue-100"
-                />
-              </div>
-              <img
-                src={
-                  data.logo.includes("http")
-                    ? data.logo
-                    : `${import.meta.env.VITE_BE_URL}/storage/${data.logo}`
-                }
-                id="logo"
-                className="w-12 h-full object-contain mx-2 mt-2"
-                alt=""
-              />
-            </div>
-            <div className="mb-4">
-              <Field
-                type="text"
-                label="Location"
-                as={InputForm}
-                name="location"
-                className="mt-1 block w-full py-2 text-gray-700"
-              />
-            </div>
-            <div className="mb-4">
-              <Field
-                type="text"
-                label="Industry"
-                as={InputForm}
-                name="industry"
-                className="mt-1 block w-full py-2 text-gray-700"
-              />
-            </div>
-            <div className="mb-4">
-              <Field
-                label="Description"
-                as={TextAreaForm}
-                name="description"
-                className="mt-1 block w-full py-2 text-gray-700"
               />
             </div>
             <div className="text-center text-green-500">{editMessage}</div>
@@ -231,7 +142,6 @@ const CompaniesTable = (): JSX.Element => {
   const CreateDataForm = ({
     onSubmit,
   }: CreateTableDataFormProps): JSX.Element => {
-    const [logoPreview, setLogoPreview] = useState<File | null>(null);
     const [createMessage, setCreateMessage] = useState("");
     const handleCreateSubmit = async (
       values: TableData,
@@ -239,13 +149,7 @@ const CompaniesTable = (): JSX.Element => {
     ) => {
       try {
         const formData = new FormData();
-        if (logoPreview) {
-          formData.append("logo", logoPreview);
-        }
-        formData.append("name", values.name);
-        formData.append("location", values.location);
-        formData.append("industry", values.industry);
-        formData.append("description", values.description);
+        formData.append("skill_name", values.skill_name);
         const response = await axiosInstance.post(`/${url}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -266,23 +170,11 @@ const CompaniesTable = (): JSX.Element => {
       setSubmitting(false);
     };
 
-    const logoHandler = (e: ChangeEvent<HTMLInputElement>): void => {
-      const file = e.currentTarget.files ? e.currentTarget.files[0] : null;
-      if (!file) return;
-      const previewUrl = URL.createObjectURL(file);
-      setLogoPreview(file);
-      document.getElementById("logo")!.setAttribute("src", previewUrl);
-    };
-
     return (
       <Formik
         initialValues={{
           id: 0,
-          name: "",
-          logo: "",
-          location: "",
-          industry: "",
-          description: "",
+          skill_name: "",
         }}
         onSubmit={handleCreateSubmit}
       >
@@ -291,64 +183,10 @@ const CompaniesTable = (): JSX.Element => {
             <div className="mb-4">
               <Field
                 type="text"
-                label="Name"
+                label="Skill Name"
                 as={InputForm}
-                name="name"
+                name="skill_name"
                 className="mt-1 block w-full py-2 "
-              />
-            </div>
-            <div className="mb-4">
-              <div className="border-2 border-gray-300 rounded-xl py-2 px-2">
-                <label htmlFor="logo" className="text-xs">
-                  Logo
-                </label>
-                <Field
-                  label="Logo"
-                  type="file"
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (e.currentTarget.files && e.currentTarget.files[0]) {
-                      logoHandler(e as CustomChangeEvent);
-                    }
-                  }}
-                  name="logo"
-                  className="mt-1 block w-full text-gray-700 text-sm
-                 file:mr-4 file:py-0 file:px-4
-                 file:rounded-md file:border-0
-                 file:text-sm file:font-semibold
-                 file:bg-blue-50 file:text-gray-700
-                 hover:file:bg-blue-100"
-                />
-              </div>
-              <img
-                id="logo"
-                className="w-12 h-full object-contain mx-2 mt-2"
-                alt=""
-              />
-            </div>
-            <div className="mb-4">
-              <Field
-                type="text"
-                label="Location"
-                as={InputForm}
-                name="location"
-                className="mt-1 block w-full py-2 text-gray-700"
-              />
-            </div>
-            <div className="mb-4">
-              <Field
-                type="text"
-                label="Industry"
-                as={InputForm}
-                name="industry"
-                className="mt-1 block w-full py-2 text-gray-700"
-              />
-            </div>
-            <div className="mb-4">
-              <Field
-                label="Description"
-                as={TextAreaForm}
-                name="description"
-                className="mt-1 block w-full py-2 text-gray-700"
               />
             </div>
             {createMessage && (
@@ -359,7 +197,7 @@ const CompaniesTable = (): JSX.Element => {
               disabled={isSubmitting}
               className="bg-indigo-600 text-white py-2 px-4 rounded"
             >
-              Create Company
+              Create {singleTitle}
             </button>
           </Form>
         )}
@@ -375,7 +213,7 @@ const CompaniesTable = (): JSX.Element => {
     setSearchTerm(term);
 
     const filtered = tableDatas.filter((data) =>
-      data.name.toLowerCase().includes(term)
+      data.skill_name.toLowerCase().includes(term)
     );
     setFilteredTableData(filtered);
   };
@@ -485,16 +323,7 @@ const CompaniesTable = (): JSX.Element => {
                 <thead>
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                      Logo
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                      Industry
+                      Skill Name
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                       Actions
@@ -515,40 +344,15 @@ const CompaniesTable = (): JSX.Element => {
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10">
                               <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                                {data.name.charAt(0)}
+                                {data.skill_name.charAt(0)}
                               </div>
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">
-                                {data.name}
+                                {data.skill_name}
                               </div>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            <img
-                              src={
-                                data.logo.includes("http")
-                                  ? data.logo
-                                  : `${import.meta.env.VITE_BE_URL}/storage/${
-                                      data.logo
-                                    }`
-                              }
-                              alt=""
-                              className="w-16 h-auto object-contain"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-900">
-                            {data.location}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-900">
-                            {data.industry}
-                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                           <button
@@ -646,4 +450,4 @@ function InputForm(props: { label: string; type: string }) {
   return <Input {...props} variant="bordered" />;
 }
 
-export default CompaniesTable;
+export default SkillsTable;
