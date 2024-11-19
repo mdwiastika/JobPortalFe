@@ -15,7 +15,6 @@ import { varAlpha } from "../../../../theme/styles";
 import { Scrollbar } from "../../../../components/scrollbar";
 import type { WorkspacesPopoverProps } from "../components/workspaces-popover";
 import Logo from "src/components/Logo";
-
 // ----------------------------------------------------------------------
 
 export type NavContentProps = {

@@ -11,6 +11,7 @@ import GetUser from "src/components/GetUser";
 export default function AdminHeader() {
   const navigate = useNavigate();
   const [isValidating, setIsValidating] = useState(true);
+  const [role, setRole] = useState("");
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -26,6 +27,7 @@ export default function AdminHeader() {
         } else {
           setIsValidating(false);
         }
+        setRole(user.roles[0].name);
       } catch (error) {
         console.error("Failed to fetch user:", error);
         navigate("/login");
@@ -55,7 +57,7 @@ export default function AdminHeader() {
     return renderFallback;
   }
   return (
-    <DashboardLayout>
+    <DashboardLayout role={role}>
       <Suspense fallback={renderFallback}>
         <Outlet />
       </Suspense>

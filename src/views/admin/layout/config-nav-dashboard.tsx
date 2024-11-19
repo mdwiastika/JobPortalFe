@@ -47,6 +47,11 @@ export const navData = [
     icon: icon("ic-jobapp"),
   },
   {
+    title: "My Profile",
+    path: "/admin/my-profile",
+    icon: icon("my-profile"),
+  },
+  {
     title: "Logout",
     path: "/admin/logout",
     icon: icon("ic-logout"),

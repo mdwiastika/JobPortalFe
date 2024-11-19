@@ -34,13 +34,16 @@ export type DashboardLayoutProps = {
   header?: {
     sx?: SxProps<Theme>;
   };
+  role: string;
 };
 
 export function DashboardLayout({
   sx,
   children,
   header,
+  role,
 }: DashboardLayoutProps) {
+  console.log(role);
   const theme = useTheme();
 
   const [navOpen, setNavOpen] = useState(false);
@@ -84,7 +87,15 @@ export function DashboardLayout({
                   }}
                 />
                 <NavMobile
-                  data={navData}
+                  data={navData.filter((item) => {
+                    if (role !== "super_admin" && role !== "admin") {
+                      return !["Users", "Skills", "Categories"].includes(
+                        item.title
+                      );
+                    } else {
+                      return item;
+                    }
+                  })}
                   open={navOpen}
                   onClose={() => setNavOpen(false)}
                   _workspaces={_workspaces}
@@ -130,7 +141,13 @@ export function DashboardLayout({
        *************************************** */
       sidebarSection={
         <NavDesktop
-          data={navData}
+          data={navData.filter((item) => {
+            if (role !== "super_admin" && role !== "admin") {
+              return !["Users", "Skills", "Categories"].includes(item.title);
+            } else {
+              return item;
+            }
+          })}
           layoutQuery={layoutQuery}
           _workspaces={_workspaces}
         />

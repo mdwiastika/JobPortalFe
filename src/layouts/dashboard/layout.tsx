@@ -21,6 +21,7 @@ import { AccountPopover } from "../components/account-popover";
 import { LanguagePopover } from "../components/language-popover";
 import { NotificationsPopover } from "../components/notifications-popover";
 import { Iconify } from "../../components/iconify";
+import { useOutletContext } from "react-router-dom";
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +38,8 @@ export function DashboardLayout({
   children,
   header,
 }: DashboardLayoutProps) {
+  const { role } = useOutletContext<{ role: string }>();
+  console.log(role, "oke");
   const theme = useTheme();
 
   const [navOpen, setNavOpen] = useState(false);
@@ -100,7 +103,7 @@ export function DashboardLayout({
                     },
                     {
                       label: "Profile",
-                      href: "#",
+                      href: "/admin/my-profile",
                       icon: (
                         <Iconify
                           width={22}
