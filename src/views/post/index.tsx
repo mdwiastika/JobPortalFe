@@ -9,7 +9,38 @@ import CalendarJobIcon from "../../components/CalendarJobIcon";
 import PinPointJobIcon from "../../components/PinPointJobIcon";
 import { Link } from "react-router-dom";
 import { Pagination } from "@nextui-org/react";
+import axiosInstance from "src/axiosInstance";
 
+interface JobPosting {
+  id: number;
+  title: string;
+  description: string;
+  employment_type: string;
+  experience_level: string;
+  work_type: string;
+  min_salary: number;
+  max_salary: number;
+  job_categories: [
+    {
+      id: number;
+      category_name: string;
+      slug_category: string;
+    }
+  ];
+  slug: string;
+  recruiter: {
+    company: {
+      name: string;
+      logo: string;
+    };
+    user: {
+      full_name: string;
+      email: string;
+    };
+  };
+  location: string;
+  created_at: string;
+}
 export default function PostIndex() {
   const [selectedSalaryRange, setSelectedSalaryRange] = useState("");
   const [selectedDatePostingRange, setSelectedDatePostingRange] = useState("");
@@ -18,7 +49,9 @@ export default function PostIndex() {
   const [selectedTypeJobRange, setSelectedTypeJobRange] = useState("");
   const [selectedWorkTypeRange, setSelectedWorkTypeRange] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalJobs, setTotalJobs] = useState(0);
   const salaryRanges = [
     "Less than 1 million",
     "1 million - 3 million",
@@ -34,6 +67,40 @@ export default function PostIndex() {
     "All",
   ];
   useEffect(() => {
+    const fetchJobPostings = async () => {
+      try {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+        const filters = {
+          salary: selectedSalaryRange,
+          date_posting: selectedDatePostingRange,
+          level_experience: selectedLevelExperienceRange.toLowerCase(),
+          type_job: selectedTypeJobRange.toLowerCase().replace("-", "_"),
+          work_type: selectedWorkTypeRange.toLowerCase().replace("-", "_"),
+          location: "",
+          job_category: "",
+        };
+        const response = await axiosInstance.get("/user/search-jobs", {
+          params: {
+            page: currentPage,
+            filters,
+          },
+        });
+        const responseData = response.data;
+        if (responseData.status === "success") {
+          setJobPostings(responseData.data.data);
+          setTotalPages(
+            Math.ceil(responseData.data.total / responseData.data.per_page)
+          );
+          setTotalJobs(responseData.data.total);
+        }
+      } catch (error) {
+        console.error("Failed to fetch job postings:", error);
+      }
+    };
+    fetchJobPostings();
     console.log(
       `Salary: ${selectedSalaryRange}, Date Posting: ${selectedDatePostingRange}, Level Experience: ${selectedLevelExperienceRange}, Type Job: ${selectedTypeJobRange}, Work Type: ${selectedWorkTypeRange}`
     );
@@ -43,6 +110,7 @@ export default function PostIndex() {
     selectedLevelExperienceRange,
     selectedTypeJobRange,
     selectedWorkTypeRange,
+    currentPage,
   ]);
   useEffect(() => {
     console.log(`Current Page: ${currentPage}`);
@@ -50,288 +118,6 @@ export default function PostIndex() {
   const levelExperienceRange = ["Beginner", "Medium", "Expert"];
   const typeJobRange = ["Full-time", "Part-time", "Contract", "Internship"];
   const workTypeRange = ["Remote", "On-site", "Hybrid"];
-  const jobPostings = [
-    {
-      id: 1,
-      recruiter_id: 123,
-      title: "Software Engineer",
-      slug: "software-engineer",
-      description:
-        "We are looking for a skilled software engineer to join our dynamic development team. You will collaborate with cross-functional teams to design, develop, and maintain scalable applications while mentoring junior developers.",
-      requirements: "Bachelor's degree in Computer Science...",
-      employment_type: "full_time",
-      experience_level: "mid",
-      work_type: "remote",
-      min_salary: 2500000,
-      max_salary: 4000000,
-      location: "New York, NY",
-      is_disability: false,
-      created_at: "2024-11-01",
-      recruiter: {
-        user: {
-          full_name: "John Doe",
-          email: "john@gmail.com",
-        },
-        company: {
-          name: "Tech Company",
-          location: "New York, NY",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 2,
-      recruiter_id: 124,
-      title: "Frontend Developer",
-      slug: "frontend-developer",
-      description:
-        "We are looking for a talented frontend developer to create exceptional user experiences.Scalability while maintaining responsive design principles and ensuring cross-browser compatibility.",
-      requirements: "Experience with React and TypeScript...",
-      employment_type: "full_time",
-      experience_level: "junior",
-      work_type: "on_site",
-      min_salary: 2000000,
-      max_salary: 3500000,
-      location: "San Francisco, CA",
-      is_disability: false,
-      created_at: "2024-10-25",
-      recruiter: {
-        user: {
-          full_name: "Jane Smith",
-          email: "jane@gmail.com",
-        },
-        company: {
-          name: "Web Solutions",
-          location: "San Francisco, CA",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 3,
-      recruiter_id: 125,
-      title: "Backend Developer",
-      slug: "backend-developer",
-      description:
-        "We are looking for a skilled backend developer to strengthen our engineering team. backend programming languages and maintaining databases while ensuring high performance and responsiveness to requests from the front-end.",
-      requirements: "Experience with Node.js and databases...",
-      employment_type: "contract",
-      experience_level: "senior",
-      work_type: "remote",
-      min_salary: 3000000,
-      max_salary: 5000000,
-      location: "Austin, TX",
-      is_disability: false,
-      created_at: "2024-10-20",
-      recruiter: {
-        user: {
-          full_name: "Alice Johnson",
-          email: "alice@gmail.com",
-        },
-        company: {
-          name: "Backend Corp",
-          location: "Austin, TX",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 4,
-      recruiter_id: 126,
-      title: "Data Scientist",
-      slug: "data-scientist",
-      description:
-        "We are looking for a data scientist to help transform complex data into actionable insights. custom data models and algorithms to apply to our datasets while analyzing data to find patterns and predict future trends.",
-      requirements: "Experience with Python and machine learning...",
-      employment_type: "full_time",
-      experience_level: "mid",
-      work_type: "hybrid",
-      min_salary: 3500000,
-      max_salary: 6000000,
-      location: "Seattle, WA",
-      is_disability: false,
-      created_at: "2024-10-15",
-      recruiter: {
-        user: {
-          full_name: "Bob Brown",
-          email: "bob@gmail.com",
-        },
-        company: {
-          name: "Data Inc",
-          location: "Seattle, WA",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 5,
-      recruiter_id: 127,
-      title: "DevOps Engineer",
-      slug: "devops-engineer",
-      description:
-        "We are looking for a DevOps engineer to help streamline our development and deployment processes. You will be responsible for implementing automation tools and frameworks to support continuous integration and deployment pipelines.",
-      requirements: "Experience with AWS and CI/CD pipelines...",
-      employment_type: "full_time",
-      experience_level: "senior",
-      work_type: "on_site",
-      min_salary: 4000000,
-      max_salary: 7000000,
-      location: "Chicago, IL",
-      is_disability: false,
-      created_at: "2024-10-10",
-      recruiter: {
-        user: {
-          full_name: "Charlie Davis",
-          email: "charlie@gmail.com",
-        },
-        company: {
-          name: "Cloud Services",
-          location: "Chicago, IL",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 6,
-      recruiter_id: 128,
-      title: "Product Manager",
-      slug: "product-manager",
-      description:
-        "We are looking for a product manager to drive the development and launch of innovative products. product development process from conception to launch while conducting market research and competitive analysis.",
-      requirements: "Experience with product lifecycle management...",
-      employment_type: "full_time",
-      experience_level: "mid",
-      work_type: "remote",
-      min_salary: 4500000,
-      max_salary: 7500000,
-      location: "Boston, MA",
-      is_disability: false,
-      created_at: "2024-10-05",
-      recruiter: {
-        user: {
-          full_name: "Diana Evans",
-          email: "diana@gmail.com",
-        },
-        company: {
-          name: "Product Co",
-          location: "Boston, MA",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 7,
-      recruiter_id: 129,
-      title: "UX Designer",
-      slug: "ux-designer",
-      description:
-        "We are looking for a UX designer to create innovative and intuitive user experiences for our products. You will be responsible for. product managers and developers to ensure the technical feasibility of UI/UX designs while conducting usability testing.",
-      requirements: "Experience with user research and design tools...",
-      employment_type: "full_time",
-      experience_level: "junior",
-      work_type: "hybrid",
-      min_salary: 3000000,
-      max_salary: 5000000,
-      location: "Los Angeles, CA",
-      is_disability: false,
-      created_at: "2024-10-01",
-      recruiter: {
-        user: {
-          full_name: "Eve Foster",
-          email: "eve@gmail.com",
-        },
-        company: {
-          name: "Design Studio",
-          location: "Los Angeles, CA",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 8,
-      recruiter_id: 130,
-      title: "QA Engineer",
-      slug: "qa-engineer",
-      description:
-        "We are looking for a QA engineer to ensure the quality of our software products. The role includes creating detailed test plans and test cases while participating in product design reviews to provide input on requirements.",
-      requirements: "Experience with automated testing tools...",
-      employment_type: "contract",
-      experience_level: "mid",
-      work_type: "on_site",
-      min_salary: 2500000,
-      max_salary: 4000000,
-      location: "Denver, CO",
-      is_disability: false,
-      created_at: "2024-09-25",
-      recruiter: {
-        user: {
-          full_name: "Frank Green",
-          email: "frank@gmail.com",
-        },
-        company: {
-          name: "QA Solutions",
-          location: "Denver, CO",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 9,
-      recruiter_id: 131,
-      title: "Marketing Specialist",
-      slug: "marketing-specialist",
-      description:
-        "We are looking for a marketing specialist to develop and implement marketing strategies for our company. trends and competitor activities while monitoring campaign performance and ROI through various analytics tools.",
-      requirements: "Experience with digital marketing and SEO...",
-      employment_type: "full_time",
-      experience_level: "junior",
-      work_type: "remote",
-      min_salary: 2000000,
-      max_salary: 3500000,
-      location: "Miami, FL",
-      is_disability: false,
-      created_at: "2024-09-20",
-      recruiter: {
-        user: {
-          full_name: "Grace Harris",
-          email: "grace@gmail.com",
-        },
-        company: {
-          name: "Marketing Experts",
-          location: "Miami, FL",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-    {
-      id: 10,
-      recruiter_id: 132,
-      title: "HR Manager",
-      slug: "hr-manager",
-      description:
-        "We are looking for an HR manager to oversee all aspects of human resources practices and processes. The role includes managing the recruitment lifecycle and providing guidance to managers while ensuring compliance with labor laws and company policies.",
-      requirements: "Experience with HR policies and procedures...",
-      employment_type: "full_time",
-      experience_level: "senior",
-      work_type: "on_site",
-      min_salary: 5000000,
-      max_salary: 8000000,
-      location: "Houston, TX",
-      is_disability: false,
-      created_at: "2024-09-15",
-      recruiter: {
-        user: {
-          full_name: "Henry Jackson",
-          email: "henry@gmail.com",
-        },
-        company: {
-          name: "HR Solutions",
-          location: "Houston, TX",
-          logo: "/jobs/brand.svg",
-        },
-      },
-    },
-  ];
   const handleSalaryChange = (range: string) => {
     setSelectedSalaryRange(range);
   };
@@ -487,14 +273,16 @@ export default function PostIndex() {
             </div>
           </div>
           <div className="col-span-4 lg:col-span-3 flex flex-col gap-2">
-            <h2 className="font-bold text-xl lg:text-3xl">3612 Jobs</h2>
+            <h2 className="font-bold text-xl lg:text-3xl">{totalJobs} Jobs</h2>
             {jobPostings.map((job) => (
               <div
                 key={job.id}
                 className="p-4 shadow-sm flex flex-row gap-3 items-start bg-white rounded-md"
               >
                 <img
-                  src={job.recruiter.company.logo}
+                  src={`${import.meta.env.VITE_BE_URL}/storage/${
+                    job.recruiter.company.logo
+                  }`}
                   className="w-16 lg:w-20 h-auto mt-4"
                   alt=""
                 />
@@ -547,7 +335,7 @@ export default function PostIndex() {
             <div className="flex justify-center items-center my-4">
               <Pagination
                 showControls
-                total={10}
+                total={totalPages}
                 initialPage={1}
                 page={currentPage}
                 onChange={setCurrentPage}

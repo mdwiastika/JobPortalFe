@@ -1,157 +1,66 @@
 import { Link } from "react-router-dom";
 import heroImage from "/hero-person1.png";
 import adminImage from "/admin.webp";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axiosInstance from "src/axiosInstance";
+import FormatString from "src/components/FormatString";
 export default function Home() {
-  const categoryItems = [
-    {
-      name: "Engineering",
-      slug: "engineering",
-      icon: "/category/engineering.svg",
-      jobs: 1000,
-    },
-    {
-      name: "Marketing",
-      slug: "marketing",
-      icon: "/category/marketing.svg",
-      jobs: 890,
-    },
-    {
-      name: "Design",
-      slug: "design",
-      icon: "/category/design.svg",
-      jobs: 750,
-    },
-    {
-      name: "Finance",
-      slug: "finance",
-      icon: "/category/finance.svg",
-      jobs: 700,
-    },
-    {
-      name: "Sales",
-      slug: "sales",
-      icon: "/category/sales.svg",
-      jobs: 650,
-    },
-    {
-      name: "Business",
-      slug: "business",
-      icon: "/category/business.svg",
-      jobs: 600,
-    },
-    {
-      name: "Human Resources",
-      slug: "human-resources",
-      icon: "/category/human-resource.svg",
-      jobs: 550,
-    },
-    {
-      name: "Information Technology",
-      slug: "information-technology",
-      icon: "/category/technology.svg",
-      jobs: 500,
-    },
-  ];
-  const jobItems = [
-    {
-      title: "Frontend Developer",
-      description: "We are looking for a frontend developer to join our team.",
-      employment_type: "Full-time",
-      categories: ["Engineering", "Information Technology"],
-      slug: "frontend-developer",
+  interface JobCategory {
+    id: number;
+    category_name: string;
+    slug_category: string;
+    icon: string;
+    job_post_count: number;
+  }
+  interface JobPosting {
+    id: number;
+    title: string;
+    description: string;
+    employment_type: string;
+    job_categories: [
+      {
+        id: number;
+        category_name: string;
+        slug_category: string;
+      }
+    ];
+    slug: string;
+    recruiter: {
       company: {
-        name: "JobWise",
-        logo: "/jobs/brand.svg",
-      },
-      location: "Jakarta, Indonesia",
-    },
-    {
-      title: "Backend Developer",
-      description: "We are looking for a backend developer to join our team.",
-      employment_type: "Full-time",
-      categories: ["Engineering", "Information Technology"],
-      slug: "backend-developer",
-      company: {
-        name: "JobWise",
-        logo: "/jobs/brand.svg",
-      },
-      location: "Surabaya, Indonesia",
-    },
-    {
-      title: "UI/UX Designer",
-      description: "We are looking for a UI/UX designer to join our team.",
-      employment_type: "Full-time",
-      categories: ["Design"],
-      slug: "ui-ux-designer",
-      company: {
-        name: "JobWise",
-        logo: "/jobs/brand.svg",
-      },
-      location: "Makassar, Indonesia",
-    },
-    {
-      title: "Product Manager",
-      description: "We are looking for a product manager to join our team.",
-      employment_type: "Full-time",
-      categories: ["Business"],
-      slug: "product-manager",
-      company: {
-        name: "JobWise",
-        logo: "/jobs/brand.svg",
-      },
-      location: "Jakarta, Indonesia",
-    },
-    {
-      title: "Marketing Manager",
-      description: "We are looking for a marketing manager to join our team.",
-      employment_type: "Full-time",
-      categories: ["Marketing"],
-      slug: "marketing-manager",
-      company: {
-        name: "JobWise",
-        logo: "/jobs/brand.svg",
-      },
-      location: "Mojokerto, Indonesia",
-    },
-    {
-      title: "Finance Manager",
-      description: "We are looking for a finance manager to join our team.",
-      employment_type: "Full-time",
-      categories: ["Finance"],
-      slug: "finance-manager",
-      company: {
-        name: "JobWise",
-        logo: "/jobs/brand.svg",
-      },
-      location: "Semarang, Indonesia",
-    },
-    {
-      title: "Sales Manager",
-      description: "We are looking for a sales manager to join our team.",
-      employment_type: "Full-time",
-      categories: ["Sales"],
-      slug: "sales-manager",
-      company: {
-        name: "JobWise",
-        logo: "/jobs/brand.svg",
-      },
-      location: "Bali, Indonesia",
-    },
-    {
-      title: "Human Resources Manager",
-      description:
-        "We are looking for a human resources manager to join our team.",
-      employment_type: "Full-time",
-      categories: ["Human Resources"],
-      slug: "human-resources-manager",
-      company: {
-        name: "JobWise",
-        logo: "/jobs/brand.svg",
-      },
-      location: "Jakarta, Indonesia",
-    },
-  ];
+        name: string;
+        logo: string;
+      };
+    };
+    location: string;
+  }
+  const [categoryItems, setCategories] = useState<JobCategory[]>([]);
+  const [jobItems, setJobItems] = useState<JobPosting[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get("/user/categories");
+        const responseData = response.data;
+        if (responseData.status == "success") {
+          setCategories(responseData.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const fetchFeaturedJobs = async () => {
+      try {
+        const response = await axiosInstance.get("/user/featured-jobs");
+        const responseData = response.data;
+        if (responseData.status == "success") {
+          setJobItems(responseData.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchFeaturedJobs();
+    fetchCategories();
+  }, []);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -428,13 +337,19 @@ export default function Home() {
               key={`${index}-category`}
               className="border-2 p-3 flex justify-start gap-2 items-center md:flex-col hover:border-blue-700 transition-all ease-in-out duration-300"
             >
-              <img src={category.icon} className="w-6 h-auto md:w-10" alt="" />
-              <h2 className="text-xl font-bold">{category.name}</h2>
+              <img
+                src={`${import.meta.env.VITE_BE_URL}/storage/${category.icon}`}
+                className="w-6 h-auto md:w-10"
+                alt=""
+              />
+              <h2 className="text-xl font-bold">{category.category_name}</h2>
               <Link
-                to={`jobs/category/${category.slug}`}
+                to={`jobs/category/${category.slug_category}`}
                 className="flex justify-start items-center gap-2"
               >
-                <span className="text-sm">{category.jobs} jobs available</span>
+                <span className="text-sm">
+                  {category.job_post_count} jobs available
+                </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="1em"
@@ -520,24 +435,32 @@ export default function Home() {
               className="border-2 group hover:bg-blue-700 hover:text-white flex flex-col gap-4 p-4 transition duration-300 ease-in-out"
             >
               <div className="flex justify-between items-center">
-                <img src={job.company.logo} alt="" />
+                <img
+                  src={`${import.meta.env.VITE_BE_URL}/storage/${
+                    job.recruiter.company.logo
+                  }`}
+                  alt=""
+                  className="w-12 h-auto"
+                />
                 <div className="py-1 px-3 border border-blue-700 group-hover:border-white">
-                  {job.employment_type}
+                  {FormatString(job.employment_type)}
                 </div>
               </div>
               <div>
                 <h2 className="mt-3 font-semibold text-base">{job.title}</h2>
                 <span className="text-sm">
-                  {job.company.name} | {job.location}
+                  {job.recruiter.company.name} | {job.location}
                 </span>
-                <p className="mt-6 text-sm">{job.description}</p>
+                <p className="mt-6 text-sm line-clamp-2">{job.description}</p>
                 <div className="mt-6 text-sm grid grid-flow-col auto-cols-max gap-2">
-                  {job.categories.map((category, index) => (
-                    <div key={`${index}-${job.title}`}>
+                  {job.job_categories.map((category, index) => (
+                    <div
+                      key={`${index}-${job.title}-${category.slug_category}`}
+                    >
                       <span
                         className={`text-blue-700 bg-blue-700/20 rounded-full py-1 px-3 group-hover:text-blue-700 group-hover:bg-white`}
                       >
-                        {category}
+                        {category.category_name}
                       </span>
                     </div>
                   ))}
