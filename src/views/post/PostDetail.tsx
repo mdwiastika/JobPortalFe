@@ -19,8 +19,7 @@ import LevelIcon from "../../components/LevelIcon";
 import Person from "../../components/Person";
 import ShareIcon from "../../components/ShareIcon";
 import CoverLetterIcon from "../../components/CoverLetter";
-import ResumeIcon from "../../components/Resume";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import "@smastrom/react-rating/style.css";
 import { Rating } from "@smastrom/react-rating";
@@ -31,6 +30,7 @@ export default function PostDetail() {
   interface FormApply {
     cover_letter: "";
     resume: "";
+    job_posting_id: number;
   }
   interface FormReview {
     review_text: string;
@@ -88,9 +88,14 @@ export default function PostDetail() {
     job_seeker_id: number;
     job_posting_id: number;
   }
+  interface CustomChangeEvent extends ChangeEvent<HTMLInputElement> {
+    currentTarget: HTMLInputElement & {
+      files: FileList;
+    };
+  }
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [resume, setResume] = useState<File>();
-  const [coverLetter, setCoverLetter] = useState<File>();
+  const [resume, setResume] = useState<File | null>(null);
+  const [coverLetter, setCoverLetter] = useState<File | null>(null);
   const [post, setPost] = useState<JobPosting>();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [saveJob, setSaveJob] = useState<SaveJob>();
@@ -159,22 +164,6 @@ export default function PostDetail() {
     fetchSaveJob();
   }, [slug, post?.id]);
   const [rating, setRating] = useState(0);
-  const handleResumeFileChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const selectedFile = event.currentTarget.files?.[0];
-    if (selectedFile) {
-      setResume(selectedFile);
-    }
-  };
-  const handleCoverLetterFileChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const selectedFile = event.currentTarget.files?.[0];
-    if (selectedFile) {
-      setCoverLetter(selectedFile);
-    }
-  };
   const reviewHandler = async (
     values: FormReview,
     { setSubmitting, resetForm }: FormikHelpers<FormReview>
@@ -237,21 +226,49 @@ export default function PostDetail() {
     values: FormApply,
     { setSubmitting, resetForm }: FormikHelpers<FormApply>
   ) => {
-    console.log("oke");
     try {
-      const response = { status: 200, data: values };
-      if (response.status == 200) {
+      const formData = new FormData();
+      if (resume) {
+        formData.append("resume", resume);
+      }
+      if (coverLetter) {
+        formData.append("cover_letter", coverLetter);
+      }
+      formData.append("job_posting_id", values.job_posting_id.toString());
+      const response = await axiosInstance.post(
+        `/user/job-applications`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      const responseData = response.data;
+      if (responseData.status == "success") {
         setSubmitMessage("Application successful!");
         resetForm();
-        console.log("testt");
       } else {
         setSubmitMessage("Application failed! Please try again.");
       }
     } catch (error) {
-      setSubmitMessage("Application failed! Please try again.");
-      console.log(error);
+      console.error("Failed to apply:", error);
     }
     setSubmitting(false);
+  };
+  const resumeHandler = (e: CustomChangeEvent): void => {
+    const file = e.currentTarget.files[0];
+    if (!file) return;
+    const previewUrl = URL.createObjectURL(file);
+    setResume(file);
+    document.getElementById("logo")!.setAttribute("src", previewUrl);
+  };
+  const coverLetterHandler = (e: CustomChangeEvent): void => {
+    const file = e.currentTarget.files[0];
+    if (!file) return;
+    const previewUrl = URL.createObjectURL(file);
+    setCoverLetter(file);
+    document.getElementById("logo")!.setAttribute("src", previewUrl);
   };
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -331,39 +348,71 @@ export default function PostDetail() {
                             initialValues={{
                               cover_letter: "",
                               resume: "",
+                              job_posting_id: post.id,
                             }}
                             onSubmit={applyHandler}
                           >
                             {({ isSubmitting }) => (
                               <Form>
-                                <div className="mt-4">
+                                <div className="border-2 border-gray-300 rounded-xl py-2 px-2">
+                                  <label htmlFor="resume" className="text-xs">
+                                    Resume
+                                  </label>
                                   <Field
+                                    label="Resume"
                                     type="file"
-                                    className="block w-full py-2 rounded-md"
-                                    name="cover_letter"
-                                    as={InputForm}
-                                    label="Cover Letter"
-                                    autoFocus
+                                    onChange={(
+                                      e: ChangeEvent<HTMLInputElement>
+                                    ) => {
+                                      if (
+                                        e.currentTarget.files &&
+                                        e.currentTarget.files[0]
+                                      ) {
+                                        resumeHandler(e as CustomChangeEvent);
+                                      }
+                                    }}
+                                    name="resume"
                                     endContent={
                                       <CoverLetterIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                                     }
-                                    onChange={handleCoverLetterFileChange}
-                                    required
-                                  ></Field>
+                                    className="mt-1 block w-full text-gray-700 text-sm
+                 file:mr-4 file:py-0 file:px-4
+                 file:rounded-md file:border-0
+                 file:text-sm file:font-semibold
+                 file:bg-blue-50 file:text-gray-700
+                 hover:file:bg-blue-100"
+                                  />
                                 </div>
-                                <div className="mt-4">
+                                <div className="border-2 border-gray-300 rounded-xl py-2 px-2 mt-2">
+                                  <label htmlFor="resume" className="text-xs">
+                                    Cover Letter
+                                  </label>
                                   <Field
+                                    label="Cover Letter"
                                     type="file"
-                                    className="block w-full py-2 rounded-md"
-                                    name="resume"
-                                    as={InputForm}
-                                    label="Resume"
+                                    onChange={(
+                                      e: ChangeEvent<HTMLInputElement>
+                                    ) => {
+                                      if (
+                                        e.currentTarget.files &&
+                                        e.currentTarget.files[0]
+                                      ) {
+                                        coverLetterHandler(
+                                          e as CustomChangeEvent
+                                        );
+                                      }
+                                    }}
+                                    name="cover_letter"
                                     endContent={
-                                      <ResumeIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                      <CoverLetterIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                                     }
-                                    onChange={handleResumeFileChange}
-                                    required
-                                  ></Field>
+                                    className="mt-1 block w-full text-gray-700 text-sm
+                 file:mr-4 file:py-0 file:px-4
+                 file:rounded-md file:border-0
+                 file:text-sm file:font-semibold
+                 file:bg-blue-50 file:text-gray-700
+                 hover:file:bg-blue-100"
+                                  />
                                 </div>
                                 <div>
                                   <p>{submitMessage && submitMessage}</p>
